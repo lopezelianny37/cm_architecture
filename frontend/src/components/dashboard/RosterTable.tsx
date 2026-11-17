@@ -19,7 +19,7 @@ export function RosterTable({ records, onOpen }: RosterTableProps) {
       <table className="w-full border-collapse">
         <thead>
           <tr>
-            {['Arquitecto', 'Macrodominio', 'Iniciativa', 'Baseline', 'Brechas', 'CSAT', ''].map((h) => (
+            {['Arquitecto', 'Macrodominio', 'Iniciativa', 'Baseline', 'Brechas', ''].map((h) => (
               <th
                 key={h}
                 className="p-[9px] border-b border-[var(--line)] text-left text-[11px] text-[var(--mut)] whitespace-nowrap"
@@ -56,9 +56,6 @@ export function RosterTable({ records, onOpen }: RosterTableProps) {
                   </span>
                 </td>
                 <td className="p-[9px] border-b border-[var(--line)] whitespace-nowrap">{gapsCount}</td>
-                <td className="p-[9px] border-b border-[var(--line)] whitespace-nowrap">
-                  {r.csat_score ? `${r.csat_score}/5` : '—'}
-                </td>
                 <td className="p-[9px] border-b border-[var(--line)] whitespace-nowrap">
                   <button
                     className="print:hidden border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white"
