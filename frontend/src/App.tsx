@@ -1,11 +1,17 @@
-import { useState } from 'react';
-import { getToken } from './lib/apiClient';
+import { useEffect, useState } from 'react';
+import { AUTH_EXPIRED_EVENT, getToken } from './lib/apiClient';
 import { login, signup, logout } from './lib/authSession';
 import { Home } from './pages/Home';
 import { FormView } from './pages/FormView';
 
 // TODO Fase 7/9: reemplazar por el flujo de login/registro real del SPEC.
-function LoginBridge({ onAuthenticated }: { onAuthenticated: () => void }) {
+function LoginBridge({
+  onAuthenticated,
+  sessionExpired,
+}: {
+  onAuthenticated: () => void;
+  sessionExpired: boolean;
+}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState<'login' | 'signup'>('login');
@@ -33,6 +39,11 @@ function LoginBridge({ onAuthenticated }: { onAuthenticated: () => void }) {
   return (
     <div className="max-w-[360px] mx-auto mt-20 p-6 bg-white border border-[var(--line)] rounded-2xl">
       <h2 className="text-[19px] mb-4">Gemba Arquitectura IB</h2>
+      {sessionExpired && (
+        <p className="text-[var(--amber)] text-sm mb-3 bg-[#fff4dc] p-2 rounded-lg">
+          Tu sesión expiró. Volvé a iniciar sesión para continuar.
+        </p>
+      )}
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           className="border border-[var(--line)] rounded-lg p-2"
@@ -73,9 +84,28 @@ function LoginBridge({ onAuthenticated }: { onAuthenticated: () => void }) {
 function App() {
   const [authenticated, setAuthenticated] = useState(() => getToken() != null);
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  useEffect(() => {
+    function handleAuthExpired() {
+      setAuthenticated(false);
+      setSelectedRecordId(null);
+      setSessionExpired(true);
+    }
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+  }, []);
 
   if (!authenticated) {
-    return <LoginBridge onAuthenticated={() => setAuthenticated(true)} />;
+    return (
+      <LoginBridge
+        sessionExpired={sessionExpired}
+        onAuthenticated={() => {
+          setSessionExpired(false);
+          setAuthenticated(true);
+        }}
+      />
+    );
   }
 
   return (

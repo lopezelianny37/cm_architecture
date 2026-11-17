@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/
 import { DatabaseService } from '@/database/database.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { RefreshDto } from './dto/refresh.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +29,9 @@ export class AuthService {
         },
         session: {
           access_token: data.session?.access_token,
+          refresh_token: data.session?.refresh_token,
           token_type: data.session?.token_type,
+          expires_in: data.session?.expires_in,
         },
       };
     } catch (error) {
@@ -61,6 +64,7 @@ export class AuthService {
         },
         session: {
           access_token: data.session?.access_token,
+          refresh_token: data.session?.refresh_token,
           token_type: data.session?.token_type,
           expires_in: data.session?.expires_in,
         },
@@ -70,6 +74,38 @@ export class AuthService {
         throw error;
       }
       throw new UnauthorizedException('Login failed');
+    }
+  }
+
+  async refresh(refreshDto: RefreshDto) {
+    const { refreshToken } = refreshDto;
+
+    try {
+      const { data, error } = await this.db.getClient().auth.refreshSession({
+        refresh_token: refreshToken,
+      });
+
+      if (error || !data.session) {
+        throw new UnauthorizedException(error?.message ?? 'Invalid refresh token');
+      }
+
+      return {
+        user: {
+          id: data.user?.id,
+          email: data.user?.email,
+        },
+        session: {
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          token_type: data.session.token_type,
+          expires_in: data.session.expires_in,
+        },
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Refresh failed');
     }
   }
 }
