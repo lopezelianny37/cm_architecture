@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { getToken } from './lib/apiClient';
 import { login, signup, logout } from './lib/authSession';
 import { Home } from './pages/Home';
+import { FormView } from './pages/FormView';
 
 // TODO Fase 7/9: reemplazar por el flujo de login/registro real del SPEC.
 function LoginBridge({ onAuthenticated }: { onAuthenticated: () => void }) {
@@ -71,6 +72,7 @@ function LoginBridge({ onAuthenticated }: { onAuthenticated: () => void }) {
 
 function App() {
   const [authenticated, setAuthenticated] = useState(() => getToken() != null);
+  const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
 
   if (!authenticated) {
     return <LoginBridge onAuthenticated={() => setAuthenticated(true)} />;
@@ -94,7 +96,11 @@ function App() {
           </button>
         </div>
       </header>
-      <Home />
+      {selectedRecordId ? (
+        <FormView recordId={selectedRecordId} onBack={() => setSelectedRecordId(null)} />
+      ) : (
+        <Home onOpenRecord={setSelectedRecordId} />
+      )}
     </>
   );
 }

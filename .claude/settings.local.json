@@ -11,7 +11,9 @@
       "Bash(echo \"✓ Monitor iniciado \\(PID: $!\\)\")",
       "Bash(pkill -f monitor_maker.sh)",
       "Bash(disown)",
-      "Bash(echo \"PID lanzado: $!\")"
+      "Bash(echo \"PID lanzado: $!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173)",
+      "Bash(curl *)"
     ]
   }
 }

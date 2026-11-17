@@ -32,3 +32,30 @@ export interface SettingsResponse {
 }
 
 export type StatusFilter = 'all' | 'complete' | 'open';
+
+export interface RecordDetail {
+  id: string;
+  architect_name: string | null;
+  macrodomain: string | null;
+  initiative_name: string | null;
+  business_referent: string | null;
+  prep_value: string | null;
+  prep_barrier: string | null;
+  isComplete: boolean;
+}
+
+export interface UpdateRecordPayload {
+  architectName?: string;
+  macrodomain?: string;
+  initiativeName?: string;
+  businessReferent?: string;
+  prepValue?: string;
+  prepBarrier?: string;
+}
+
+export interface MotivatorItem {
+  name: string;
+  description: string;
+  order: number;
+  impact: number;
+}

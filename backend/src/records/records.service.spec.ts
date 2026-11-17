@@ -1,5 +1,6 @@
 import { RecordsService } from './records.service';
 import { DatabaseService } from '@/database/database.service';
+import { MotivatorsService } from '@/motivators/motivators.service';
 
 function buildQueryMock(result: { data: any[]; error: any; count: number }) {
   const query: any = {
@@ -22,8 +23,11 @@ describe('RecordsService', () => {
     const db = {
       getUserClient: jest.fn().mockReturnValue(client),
     } as unknown as DatabaseService;
-    const service = new RecordsService(db);
-    return { service, fromMock, client };
+    const motivatorsService = {
+      seedForRecord: jest.fn().mockResolvedValue(undefined),
+    } as unknown as MotivatorsService;
+    const service = new RecordsService(db, motivatorsService);
+    return { service, fromMock, client, motivatorsService };
   }
 
   it('returns empty records with total 0 when no rows', async () => {

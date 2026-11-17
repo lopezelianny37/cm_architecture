@@ -8,7 +8,11 @@ import { BarChart } from '../components/charts/BarChart';
 import { RadarChart } from '../components/charts/RadarChart';
 import { BEH_SHORT_LABELS, MOT_NAMES } from '../constants/gemba.constants';
 
-export function Home() {
+interface HomeProps {
+  onOpenRecord: (id: string) => void;
+}
+
+export function Home({ onOpenRecord }: HomeProps) {
   const {
     macrodomain,
     setMacrodomain,
@@ -29,8 +33,9 @@ export function Home() {
   async function handleCreate() {
     const name = newArchitectName.trim();
     if (!name) return;
-    await createRecord(name);
+    const id = await createRecord(name);
     setNewArchitectName('');
+    onOpenRecord(id);
   }
 
   return (
@@ -109,7 +114,7 @@ export function Home() {
 
       <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
         <h2 className="text-[19px] m-0 mb-2">Seguimiento de arquitectos</h2>
-        <RosterTable records={records} onOpen={() => {}} />
+        <RosterTable records={records} onOpen={onOpenRecord} />
       </div>
     </div>
   );

@@ -80,8 +80,9 @@ export function useDashboardData() {
 
   const createRecord = useCallback(
     async (architectName: string) => {
-      await apiClient.post('/api/records', { architectName });
+      const created = await apiClient.post<{ id: string }>('/api/records', { architectName });
       refetch();
+      return created.id;
     },
     [refetch],
   );
