@@ -9,7 +9,6 @@ import { DebriefSection } from '../components/form/DebriefSection';
 import { FlowQA } from '../components/form/FlowQA';
 import { GapsTable } from '../components/form/GapsTable';
 import { ConditionsChecklist } from '../components/form/ConditionsChecklist';
-import { CsatSection } from '../components/form/CsatSection';
 import { Toast } from '../components/Toast';
 import { exportOneRecord } from '../lib/exportImport';
 import type { BehaviorObservation, ConditionEntry, FlowStep, Gap } from '../types/api';
@@ -110,10 +109,6 @@ export function FormView({ recordId, onBack }: FormViewProps) {
   const hasObservedBehavior = currentBehaviors.some((b) => b.state !== 'na');
   const hasFlowStep = currentFlowSteps.some((f) => f.objective || f.out);
   const diagReady = hasObservedBehavior && hasFlowStep;
-
-  function handleScoreChange(score: number | null) {
-    updateField({ csatScore: score });
-  }
 
   async function handleExportRecord() {
     try {
@@ -319,16 +314,6 @@ export function FormView({ recordId, onBack }: FormViewProps) {
               habilitada no debe cargarse solo al arquitecto.
             </p>
             <ConditionsChecklist conditions={currentConditions} onChange={setConditions} />
-          </div>
-
-          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
-            <h2 className="text-[19px] m-0 mb-2">Satisfacción del arquitecto (CSAT)</h2>
-            <CsatSection
-              score={record.csat_score}
-              comment={record.csat_comment ?? ''}
-              onScoreChange={handleScoreChange}
-              onSaveComment={(v) => updateField({ csatComment: v })}
-            />
           </div>
         </>
       )}

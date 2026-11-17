@@ -85,7 +85,6 @@ export function Home({ onOpenRecord }: HomeProps) {
         totalArchitects={metrics?.totalArchitects ?? 0}
         completeRecords={metrics?.completeRecords ?? 0}
         totalGaps={metrics?.totalGaps ?? 0}
-        csatAverage={metrics?.csatAverage ?? null}
       />
 
       <div className="grid grid-cols-1 tablet:grid-cols-2 gap-[14px]">

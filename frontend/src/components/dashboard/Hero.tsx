@@ -16,11 +16,6 @@ export function Hero() {
         identificar y cerrar brechas de comportamiento, aumentará su capacidad para cocrear con
         negocio y tomar decisiones más informadas y orientadas a valor.
       </div>
-      <div className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mt-3">
-        <b>Hipótesis de acompañamiento:</b> Si proporcionamos acompañamiento focalizado a los
-        arquitectos a partir de las brechas observadas en situaciones reales, entonces podrán
-        incorporar y aplicar comportamientos del nuevo rol en iniciativas reales.
-      </div>
     </div>
   );
 }
