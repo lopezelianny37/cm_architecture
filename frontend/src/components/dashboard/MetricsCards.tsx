@@ -12,7 +12,7 @@ export function MetricsCards({
   csatAverage,
 }: MetricsCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[10px]">
+    <div className="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-4 gap-[10px]">
       <div className="bg-[#f8fafc] border border-[var(--line)] rounded-xl p-[13px]">
         <span className="block text-[11px] text-[var(--mut)]">Arquitectos en alcance</span>
         <b className="text-[24px] text-[var(--navy)]">{totalArchitects}</b>

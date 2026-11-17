@@ -50,7 +50,7 @@ export function BehaviorObservations({ behaviors, onChange }: BehaviorObservatio
                     </label>
                   ))}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 tablet:grid-cols-2 gap-2">
                   <label className="block text-[11px] font-bold text-[var(--mut)]">
                     Hecho observado
                     <textarea

@@ -28,16 +28,16 @@ export function GapsTable({ gaps, onChange }: GapsTableProps) {
       {gaps.map((g, i) => (
         <div
           key={i}
-          className="grid grid-cols-1 md:grid-cols-[1.3fr_0.9fr_1.1fr_1.1fr_34px] gap-[8px] items-center my-2 p-[9px] border border-[var(--line)] rounded-xl"
+          className="grid grid-cols-1 tablet:grid-cols-[1.3fr_0.9fr_1.1fr_1.1fr_44px] gap-[8px] items-center my-2 p-[9px] border border-[var(--line)] rounded-xl"
         >
           <input
-            className="p-2 border border-[var(--line)] rounded-lg"
+            className="p-2 min-h-11 border border-[var(--line)] rounded-lg"
             placeholder="Brecha / hallazgo"
             value={g.text}
             onChange={(e) => updateAt(i, { text: e.target.value })}
           />
           <select
-            className="p-2 border border-[var(--line)] rounded-lg"
+            className="p-2 min-h-11 border border-[var(--line)] rounded-lg"
             value={g.type}
             onChange={(e) => updateAt(i, { type: e.target.value })}
           >
@@ -48,20 +48,20 @@ export function GapsTable({ gaps, onChange }: GapsTableProps) {
             ))}
           </select>
           <input
-            className="p-2 border border-[var(--line)] rounded-lg"
+            className="p-2 min-h-11 border border-[var(--line)] rounded-lg"
             placeholder="Evidencia"
             value={g.evidence}
             onChange={(e) => updateAt(i, { evidence: e.target.value })}
           />
           <input
-            className="p-2 border border-[var(--line)] rounded-lg"
+            className="p-2 min-h-11 border border-[var(--line)] rounded-lg"
             placeholder="Condición para ejercer el rol"
             value={g.condition}
             onChange={(e) => updateAt(i, { condition: e.target.value })}
           />
           <button
             type="button"
-            className="w-[32px] h-[32px] border border-[var(--line)] rounded-lg bg-white"
+            className="print:hidden w-11 h-11 border border-[var(--line)] rounded-lg bg-white"
             onClick={() => deleteGap(i)}
             aria-label={`Eliminar brecha ${i + 1}`}
           >
@@ -71,7 +71,7 @@ export function GapsTable({ gaps, onChange }: GapsTableProps) {
       ))}
       <button
         type="button"
-        className="border border-[var(--line)] rounded-lg px-3 py-2 bg-white mt-2"
+        className="print:hidden border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white mt-2 w-full tablet:w-auto"
         onClick={addGap}
       >
         + Agregar brecha

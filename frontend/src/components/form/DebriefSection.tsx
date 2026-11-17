@@ -22,7 +22,7 @@ export function DebriefSection({
   onSaveTry,
 }: DebriefSectionProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-[11px]">
+    <div className="grid grid-cols-1 tablet:grid-cols-2 gap-[11px]">
       <AutoSaveField
         label="¿Qué hiciste bien respecto del nuevo rol?"
         initialValue={strength}

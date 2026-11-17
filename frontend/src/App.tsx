@@ -138,7 +138,7 @@ function App() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-white border-b border-[var(--line)]">
+      <header className="print:hidden sticky top-0 z-30 bg-white border-b border-[var(--line)]">
         <div className="max-w-[1280px] mx-auto px-[18px] py-[10px] flex items-center gap-[14px]">
           <div className="font-extrabold text-[var(--navy)] text-[16px]">
             Experimento Gemba · Arquitectura IB
@@ -148,19 +148,19 @@ function App() {
           </div>
           <nav className="ml-auto flex gap-[6px] flex-wrap">
             <button
-              className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white font-bold text-[#44516a]"
+              className="border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white font-bold text-[#44516a]"
               onClick={handleExportAll}
             >
               Descargar información
             </button>
             <button
-              className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white font-bold text-[#44516a]"
+              className="border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white font-bold text-[#44516a]"
               onClick={() => setImportModalOpen(true)}
             >
               Cargar información
             </button>
             <button
-              className="border border-[var(--line)] rounded-lg px-3 py-1"
+              className="border border-[var(--line)] rounded-lg px-3 min-h-11"
               onClick={() => {
                 logout();
                 setAuthenticated(false);

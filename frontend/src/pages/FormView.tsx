@@ -126,8 +126,8 @@ export function FormView({ recordId, onBack }: FormViewProps) {
 
   return (
     <div className="max-w-[1280px] mx-auto p-5 flex flex-col gap-[14px]">
-      <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[11px]">
+      <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+        <div className="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-4 gap-[11px]">
           <AutoSaveField
             label="Arquitecto"
             initialValue={record.architect_name ?? ''}
@@ -155,17 +155,17 @@ export function FormView({ recordId, onBack }: FormViewProps) {
         </div>
         <div className="flex justify-between items-center gap-[9px] mt-3 flex-wrap">
           <span className="text-[11px] text-[var(--green)]">✓ Guardado automático</span>
-          <div className="flex gap-[9px]">
+          <div className="print:hidden flex gap-[9px] flex-col tablet:flex-row w-full tablet:w-auto">
             <button
               type="button"
-              className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white"
+              className="border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white"
               onClick={handleExportRecord}
             >
               Descargar respaldo completo
             </button>
             <button
               type="button"
-              className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white"
+              className="border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white"
               onClick={onBack}
             >
               Volver al home
@@ -174,11 +174,11 @@ export function FormView({ recordId, onBack }: FormViewProps) {
         </div>
       </div>
 
-      <nav className="flex gap-[7px] flex-wrap">
+      <nav className="print:hidden flex gap-[7px] flex-wrap">
         <button
           type="button"
           onClick={() => setActiveTab('prep')}
-          className={`rounded-lg px-[11px] py-2 font-extrabold border ${
+          className={`rounded-lg px-[11px] min-h-11 font-extrabold border ${
             activeTab === 'prep'
               ? 'bg-[var(--navy)] border-[var(--navy)] text-white'
               : 'bg-white border-[var(--line)] text-[#44516a]'
@@ -189,7 +189,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
         <button
           type="button"
           onClick={() => setActiveTab('gemba')}
-          className={`rounded-lg px-[11px] py-2 font-extrabold border ${
+          className={`rounded-lg px-[11px] min-h-11 font-extrabold border ${
             activeTab === 'gemba'
               ? 'bg-[var(--navy)] border-[var(--navy)] text-white'
               : 'bg-white border-[var(--line)] text-[#44516a]'
@@ -206,7 +206,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
               ? undefined
               : 'Registra al menos 1 comportamiento observado y 1 paso de flujo con objetivo/salida antes de continuar'
           }
-          className={`rounded-lg px-[11px] py-2 font-extrabold border ${
+          className={`rounded-lg px-[11px] min-h-11 font-extrabold border ${
             !diagReady
               ? 'bg-white border-[var(--line)] text-[#44516a] opacity-50 cursor-not-allowed'
               : activeTab === 'diag'
@@ -220,12 +220,12 @@ export function FormView({ recordId, onBack }: FormViewProps) {
 
       {activeTab === 'prep' && (
         <>
-          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[#fff4dc] text-[var(--amber)] mb-2">
               Desire · Management 3.0
             </span>
             <h2 className="text-[19px] m-0 mb-3">Preparar: valor, barreras y motivadores</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[11px]">
+            <div className="grid grid-cols-1 tablet:grid-cols-2 gap-[11px]">
               <AutoSaveField
                 label="¿Para mí este piloto habrá valido la pena si…?"
                 initialValue={record.prep_value ?? ''}
@@ -243,7 +243,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
             </div>
           </div>
 
-          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <h2 className="text-[19px] m-0 mb-2">Moving Motivators</h2>
             <p className="text-[var(--mut)] mb-3">
               Ordena las tarjetas de arriba a abajo, desde la menos importante hasta la más
@@ -257,7 +257,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
 
       {activeTab === 'gemba' && (
         <>
-          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[#fff0f1] text-[var(--red)] mb-2">
               Gemba 1 · Baseline
             </span>
@@ -269,7 +269,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
             <BehaviorObservations behaviors={currentBehaviors} onChange={setBehaviors} />
           </div>
 
-          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <h2 className="text-[19px] m-0 mb-2">Flujo real que siguió</h2>
             <div className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mb-3">
               Reconstruye los pasos reales que el arquitecto sigue desde que recibe una
@@ -284,7 +284,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
 
       {activeTab === 'diag' && diagReady && (
         <>
-          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[var(--sky)] text-[var(--blue)] mb-2">
               Debrief
             </span>
@@ -303,7 +303,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
             <FlowQA answers={currentFlowQa} onChange={setFlowQa} />
           </div>
 
-          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <h2 className="text-[19px] m-0 mb-2">Brechas priorizadas</h2>
             <div className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mb-3">
               Clasifica el hallazgo por causa principal. No todo se resuelve formando al
@@ -312,7 +312,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
             <GapsTable gaps={currentGaps} onChange={setGaps} />
           </div>
 
-          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <h2 className="text-[19px] m-0 mb-2">Condiciones para ejercer el rol</h2>
             <p className="text-[var(--mut)] mb-2">
               Permite distinguir brechas personales de barreras del sistema. Una condición no
@@ -321,7 +321,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
             <ConditionsChecklist conditions={currentConditions} onChange={setConditions} />
           </div>
 
-          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <h2 className="text-[19px] m-0 mb-2">Satisfacción del arquitecto (CSAT)</h2>
             <CsatSection
               score={record.csat_score}

@@ -1,6 +1,6 @@
 export function Hero() {
   return (
-    <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+    <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
       <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[#fff0f1] text-[var(--red)]">
         Hipótesis 1 · alcance reducido
       </span>

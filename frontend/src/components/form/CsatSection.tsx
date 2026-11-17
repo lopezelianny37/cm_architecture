@@ -9,7 +9,7 @@ interface CsatSectionProps {
 
 export function CsatSection({ score, comment, onScoreChange, onSaveComment }: CsatSectionProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-[11px]">
+    <div className="grid grid-cols-1 tablet:grid-cols-2 gap-[11px]">
       <label className="block text-[11px] font-bold text-[var(--mut)]">
         En una escala de 1 a 5, ¿qué tan útil fue el acompañamiento Gemba?
         <select

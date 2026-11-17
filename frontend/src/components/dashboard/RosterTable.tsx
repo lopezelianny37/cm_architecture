@@ -61,7 +61,7 @@ export function RosterTable({ records, onOpen }: RosterTableProps) {
                 </td>
                 <td className="p-[9px] border-b border-[var(--line)] whitespace-nowrap">
                   <button
-                    className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white"
+                    className="print:hidden border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white"
                     onClick={() => onOpen(r.id)}
                   >
                     Abrir

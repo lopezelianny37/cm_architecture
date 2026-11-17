@@ -11,7 +11,7 @@ export function FlowQA({ answers, onChange }: FlowQAProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-[11px]">
+    <div className="grid grid-cols-1 tablet:grid-cols-2 gap-[11px]">
       {FLOWQ.map((question, i) => (
         <label key={question} className="block text-[11px] font-bold text-[var(--mut)] bg-[#f8fafc] border border-[var(--line)] rounded-lg p-[10px]">
           {question}

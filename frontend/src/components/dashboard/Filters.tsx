@@ -16,7 +16,7 @@ export function Filters({
   onStatusChange,
 }: FiltersProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_0.7fr] gap-[10px]">
+    <div className="grid grid-cols-1 desktop:grid-cols-[1fr_1fr_0.7fr] gap-[10px]">
       <label className="block text-[11px] font-bold text-[var(--mut)]">
         Arquitectura
         <select className="in w-full mt-1 p-2 border border-[var(--line)] rounded-lg" disabled value="all">

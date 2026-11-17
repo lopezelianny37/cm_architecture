@@ -52,10 +52,9 @@ export function MotivatorList({ motivators, onChange }: MotivatorListProps) {
           onDragStart={() => setDraggedName(m.name)}
           onDragOver={(e) => e.preventDefault()}
           onDrop={() => handleDrop(m.name)}
-          className="grid items-center gap-[9px] p-[10px] border border-[var(--line)] rounded-xl bg-white"
-          style={{ gridTemplateColumns: '36px 1fr 150px 34px 34px' }}
+          className="grid grid-cols-1 tablet:grid-cols-[36px_1fr_150px_44px_44px] items-center gap-[9px] p-[10px] border border-[var(--line)] rounded-xl bg-white"
         >
-          <div className="text-[20px] text-[#8a96aa] text-center cursor-grab">↕</div>
+          <div className="print:hidden hidden tablet:block text-[20px] text-[#8a96aa] text-center cursor-grab">↕</div>
           <div>
             <b className="block">
               {i + 1}. {m.name}
@@ -77,7 +76,7 @@ export function MotivatorList({ motivators, onChange }: MotivatorListProps) {
           </div>
           <button
             type="button"
-            className="w-[32px] h-[32px] border border-[var(--line)] rounded-lg bg-white"
+            className="print:hidden w-11 h-11 border border-[var(--line)] rounded-lg bg-white"
             onClick={() => move(m.name, 'up')}
             aria-label={`Subir ${m.name}`}
           >
@@ -85,7 +84,7 @@ export function MotivatorList({ motivators, onChange }: MotivatorListProps) {
           </button>
           <button
             type="button"
-            className="w-[32px] h-[32px] border border-[var(--line)] rounded-lg bg-white"
+            className="print:hidden w-11 h-11 border border-[var(--line)] rounded-lg bg-white"
             onClick={() => move(m.name, 'down')}
             aria-label={`Bajar ${m.name}`}
           >

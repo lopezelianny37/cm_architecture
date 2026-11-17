@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Breakpoints matching the prototype's actual media queries (950px/620px),
+   not Tailwind's defaults (768px/640px) — used as `tablet:`/`desktop:`. */
+@theme {
+  --breakpoint-tablet: 620px;
+  --breakpoint-desktop: 950px;
+}
+
 :root {
   --navy: #071d49;
   --blue: #2875d9;
@@ -35,4 +42,21 @@ select {
 
 button {
   cursor: pointer;
+}
+
+/* Every "card" div also carries this plain class (alongside its Tailwind
+   utilities) so print rules can target all of them without listing every
+   Tailwind-generated selector individually. */
+.card {
+  break-inside: avoid;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .card {
+    box-shadow: none !important;
+  }
 }
