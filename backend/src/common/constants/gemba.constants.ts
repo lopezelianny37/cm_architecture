@@ -1,0 +1,116 @@
+export interface BehaviorDef {
+  name: string;
+  description: string;
+}
+
+export interface MotivatorDef {
+  name: string;
+  description: string;
+}
+
+export interface ConditionDef {
+  name: string;
+  question: string;
+}
+
+export const BEH: BehaviorDef[] = [
+  {
+    name: 'Comprende antes de proponer',
+    description:
+      'Pregunta por propósito, problema, usuario y resultado esperado antes de hablar de tecnología.',
+  },
+  {
+    name: 'Flujo de valor del negocio y conexión con estrategia y valor',
+    description:
+      'Comprende el flujo punta a punta, actores, dependencias y puntos de decisión, y conecta la iniciativa con prioridades estratégicas y valor esperado.',
+  },
+  {
+    name: 'Explora alternativas y trade-offs',
+    description:
+      'Compara valor, riesgo, costo, velocidad y complejidad antes de recomendar.',
+  },
+  {
+    name: 'Piensa regional y reutiliza',
+    description: 'Busca capacidades existentes y cuestiona soluciones aisladas.',
+  },
+  {
+    name: 'Facilita e influye',
+    description:
+      'Escucha, resume y desafía supuestos con evidencias; no confía solo en lo que le dicen, va más allá para generar acuerdos con otras áreas, incluso Negocio, aporta dirección y remueve barreras.',
+  },
+  {
+    name: 'Lenguaje apropiado según audiencia',
+    description:
+      'Usa conceptos y términos de acuerdo con la audiencia y emplea con naturalidad el lenguaje de negocio propio de la iniciativa.',
+  },
+  {
+    name: 'Hace visible la contribución',
+    description: 'Explica qué decisión, resultado o valor habilitó Arquitectura.',
+  },
+  {
+    name: 'Cocrea y orienta decisiones a valor',
+    description:
+      'Integra a Negocio en la exploración, valida entendimiento y acompaña decisiones basadas en evidencia y valor.',
+  },
+];
+
+export const MOT: MotivatorDef[] = [
+  { name: 'Aceptación', description: 'Las personas que me rodean aprueban lo que hago y quién soy.' },
+  { name: 'Curiosidad', description: 'Tengo muchas cosas que investigar y sobre las cuales pensar.' },
+  { name: 'Libertad', description: 'Soy independiente de otros con mi trabajo y mis responsabilidades.' },
+  { name: 'Estatus', description: 'Mi posición es buena y reconocida por las personas que trabajan conmigo.' },
+  { name: 'Meta', description: 'Mi propósito en la vida se refleja en el trabajo que hago.' },
+  { name: 'Honor', description: 'Mis valores personales se reflejan en cómo trabajo.' },
+  { name: 'Maestría', description: 'Mi trabajo desafía mis competencias, pero sigue dentro de mis capacidades.' },
+  { name: 'Orden', description: 'Existen suficientes reglas y políticas para un ambiente estable.' },
+  { name: 'Poder', description: 'Hay suficiente espacio para influir en lo que sucede a mi alrededor.' },
+  { name: 'Relaciones', description: 'Tengo buenas relaciones sociales con las personas en mi trabajo.' },
+];
+
+export const TYPES: string[] = [
+  'Conocimiento',
+  'Habilidad / skill',
+  'Comportamiento',
+  'Motivación',
+  'Proceso',
+  'Acceso',
+  'Prioridad / capacidad',
+  'Rol / responsabilidades',
+  'Información',
+  'Gobernanza',
+];
+
+export const COND: ConditionDef[] = [
+  { name: 'Acceso a Negocio', question: '¿Tuvo acceso directo al referente cuando lo necesitó?' },
+  {
+    name: 'Participación temprana',
+    question: '¿Arquitectura entró antes de que problema y solución estuvieran cerrados?',
+  },
+  {
+    name: 'Información',
+    question: '¿Tuvo estrategia, KPIs, portafolio, dependencias y capacidades disponibles?',
+  },
+  {
+    name: 'Tiempo / prioridad',
+    question: '¿Tuvo espacio para discovery y análisis, o las urgencias lo impidieron?',
+  },
+  {
+    name: 'Claridad de rol',
+    question: '¿Estaba claro qué lideraba, en qué contribuía y qué acompañaba Arquitectura?',
+  },
+  {
+    name: 'Patrocinio / liderazgo',
+    question: '¿El entorno respaldó que desafiara supuestos y cocreara con Negocio?',
+  },
+  {
+    name: 'Foros y gobernanza',
+    question: '¿Los foros permitieron explorar alternativas y tomar decisiones con evidencia?',
+  },
+];
+
+export const FLOWQ: string[] = [
+  '¿En qué paso entró Negocio?',
+  '¿Cuándo apareció una solución?',
+  '¿Qué paso generó mayor espera o retrabajo?',
+  '¿Qué paso faltó y hubiera cambiado la decisión?',
+];

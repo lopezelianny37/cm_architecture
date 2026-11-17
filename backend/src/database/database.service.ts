@@ -23,6 +23,17 @@ export class DatabaseService implements OnModuleInit {
     return this.supabase;
   }
 
+  getUserClient(accessToken: string): SupabaseClient {
+    const supabaseUrl = process.env.SUPABASE_URL || 'http://localhost:54321';
+    const supabaseKey = process.env.SUPABASE_KEY || 'dev-key';
+
+    return createClient(supabaseUrl, supabaseKey, {
+      global: {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    });
+  }
+
   async checkConnection(): Promise<boolean> {
     try {
       const { data, error } = await this.supabase.rpc('ping', {});

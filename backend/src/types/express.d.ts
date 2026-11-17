@@ -6,6 +6,7 @@ declare global {
         email?: string;
         aud?: string;
       };
+      accessToken?: string;
     }
   }
 }

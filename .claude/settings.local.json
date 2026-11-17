@@ -4,7 +4,14 @@
       "Bash(herdr pane *)",
       "Bash(herdr agent *)",
       "Bash(claude mcp *)",
-      "Bash(curl -s http://localhost:3000/health)"
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(cat)",
+      "Bash(chmod +x /tmp/monitor_maker.sh)",
+      "Bash(nohup /tmp/monitor_maker.sh)",
+      "Bash(echo \"✓ Monitor iniciado \\(PID: $!\\)\")",
+      "Bash(pkill -f monitor_maker.sh)",
+      "Bash(disown)",
+      "Bash(echo \"PID lanzado: $!\")"
     ]
   }
 }

@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { RecordsModule } from './records/records.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { RecordsModule } from './records/records.module';
     DatabaseModule,
     AuthModule,
     RecordsModule,
+    DashboardModule,
+    SettingsModule,
   ],
   controllers: [AppController],
 })

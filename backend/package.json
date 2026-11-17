@@ -19,6 +19,18 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
+  "jest": {
+    "rootDir": "src",
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "moduleFileExtensions": ["ts", "js", "json"],
+    "testRegex": ".*\\.spec\\.ts$",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    }
+  },
   "dependencies": {
     "@nestjs/common": "^10.2.0",
     "@nestjs/config": "^3.0.0",
@@ -26,15 +38,17 @@
     "@nestjs/jwt": "^12.0.0",
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^10.2.0",
+    "@nestjs/swagger": "^12.1.2",
     "@supabase/supabase-js": "^2.38.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "cors": "^2.8.5",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.0",
     "rxjs": "^7.8.0",
-    "cors": "^2.8.5"
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.2.0",
