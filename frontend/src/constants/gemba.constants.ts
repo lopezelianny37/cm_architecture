@@ -4,16 +4,54 @@
  * Decisión Fase 2: duplicar aquí en vez de un paquete `shared/` (ver plan de Fase 2).
  */
 
-export const BEH_NAMES: string[] = [
-  'Comprende antes de proponer',
-  'Flujo de valor del negocio y conexión con estrategia y valor',
-  'Explora alternativas y trade-offs',
-  'Piensa regional y reutiliza',
-  'Facilita e influye',
-  'Lenguaje apropiado según audiencia',
-  'Hace visible la contribución',
-  'Cocrea y orienta decisiones a valor',
+export interface BehaviorDef {
+  name: string;
+  description: string;
+}
+
+export const BEH: BehaviorDef[] = [
+  {
+    name: 'Comprende antes de proponer',
+    description:
+      'Pregunta por propósito, problema, usuario y resultado esperado antes de hablar de tecnología.',
+  },
+  {
+    name: 'Flujo de valor del negocio y conexión con estrategia y valor',
+    description:
+      'Comprende el flujo punta a punta, actores, dependencias y puntos de decisión, y conecta la iniciativa con prioridades estratégicas y valor esperado.',
+  },
+  {
+    name: 'Explora alternativas y trade-offs',
+    description: 'Compara valor, riesgo, costo, velocidad y complejidad antes de recomendar.',
+  },
+  {
+    name: 'Piensa regional y reutiliza',
+    description: 'Busca capacidades existentes y cuestiona soluciones aisladas.',
+  },
+  {
+    name: 'Facilita e influye',
+    description:
+      'Escucha, resume y desafía supuestos con evidencias; no confía solo en lo que le dicen, va más allá para generar acuerdos con otras áreas, incluso Negocio, aporta dirección y remueve barreras.',
+  },
+  {
+    name: 'Lenguaje apropiado según audiencia',
+    description:
+      'Usa conceptos y términos de acuerdo con la audiencia y emplea con naturalidad el lenguaje de negocio propio de la iniciativa.',
+  },
+  {
+    name: 'Hace visible la contribución',
+    description: 'Explica qué decisión, resultado o valor habilitó Arquitectura.',
+  },
+  {
+    name: 'Cocrea y orienta decisiones a valor',
+    description:
+      'Integra a Negocio en la exploración, valida entendimiento y acompaña decisiones basadas en evidencia y valor.',
+  },
 ];
+
+export const BEH_NAMES: string[] = BEH.map((b) => b.name);
+
+export const WASTE_TYPES: string[] = ['Retrabajo', 'Supuesto', 'Espera', 'Oportunidad'];
 
 export const MOT_NAMES: string[] = [
   'Aceptación',

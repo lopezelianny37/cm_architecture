@@ -33,6 +33,24 @@ export interface SettingsResponse {
 
 export type StatusFilter = 'all' | 'complete' | 'open';
 
+export type BehaviorState = 'si' | 'par' | 'no' | 'na';
+
+export interface BehaviorObservation {
+  state: BehaviorState;
+  fact: string;
+  artifact: string;
+}
+
+export type WasteType = '' | 'Retrabajo' | 'Supuesto' | 'Espera' | 'Oportunidad';
+
+export interface FlowStep {
+  step: string;
+  objective: string;
+  with: string;
+  out: string;
+  waste: WasteType;
+}
+
 export interface RecordDetail {
   id: string;
   architect_name: string | null;
@@ -41,6 +59,8 @@ export interface RecordDetail {
   business_referent: string | null;
   prep_value: string | null;
   prep_barrier: string | null;
+  behaviors: BehaviorObservation[] | null;
+  flow_steps: FlowStep[] | null;
   isComplete: boolean;
 }
 
@@ -51,6 +71,8 @@ export interface UpdateRecordPayload {
   businessReferent?: string;
   prepValue?: string;
   prepBarrier?: string;
+  behaviors?: BehaviorObservation[];
+  flowSteps?: FlowStep[];
 }
 
 export interface MotivatorItem {

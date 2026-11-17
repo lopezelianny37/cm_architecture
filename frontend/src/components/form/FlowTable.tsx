@@ -1,0 +1,105 @@
+import { WASTE_TYPES } from '../../constants/gemba.constants';
+import type { FlowStep, WasteType } from '../../types/api';
+
+interface FlowTableProps {
+  flowSteps: FlowStep[];
+  onChange: (flowSteps: FlowStep[]) => void;
+}
+
+function emptyStep(): FlowStep {
+  return { step: '', objective: '', with: '', out: '', waste: '' };
+}
+
+export function FlowTable({ flowSteps, onChange }: FlowTableProps) {
+  function updateAt(index: number, patch: Partial<FlowStep>) {
+    onChange(flowSteps.map((f, i) => (i === index ? { ...f, ...patch } : f)));
+  }
+
+  function addStep() {
+    onChange([...flowSteps, emptyStep()]);
+  }
+
+  function deleteStep(index: number) {
+    onChange(flowSteps.filter((_, i) => i !== index));
+  }
+
+  return (
+    <div>
+      <div
+        className="hidden md:grid gap-[7px] text-[10px] font-extrabold text-[var(--mut)] my-2"
+        style={{ gridTemplateColumns: '34px 1.15fr 1fr 1fr 1fr 0.85fr 34px' }}
+      >
+        <span></span>
+        <span>Qué hizo</span>
+        <span>Objetivo del paso</span>
+        <span>Con quién</span>
+        <span>Salida / decisión</span>
+        <span>Tipo</span>
+        <span></span>
+      </div>
+
+      {flowSteps.map((f, i) => (
+        <div
+          key={i}
+          className="grid grid-cols-1 md:grid-cols-[34px_1.15fr_1fr_1fr_1fr_0.85fr_34px] gap-[7px] items-center my-2"
+        >
+          <span className="w-[30px] h-[30px] rounded-full grid place-items-center bg-[var(--sky)] text-[var(--blue)] font-extrabold">
+            {i + 1}
+          </span>
+          <input
+            className="p-2 border border-[var(--line)] rounded-lg"
+            placeholder="Qué hizo"
+            value={f.step}
+            onChange={(e) => updateAt(i, { step: e.target.value })}
+          />
+          <input
+            className="p-2 border border-[var(--line)] rounded-lg"
+            placeholder="Objetivo del paso"
+            value={f.objective}
+            onChange={(e) => updateAt(i, { objective: e.target.value })}
+          />
+          <input
+            className="p-2 border border-[var(--line)] rounded-lg"
+            placeholder="Con quién"
+            value={f.with}
+            onChange={(e) => updateAt(i, { with: e.target.value })}
+          />
+          <input
+            className="p-2 border border-[var(--line)] rounded-lg"
+            placeholder="Salida / decisión"
+            value={f.out}
+            onChange={(e) => updateAt(i, { out: e.target.value })}
+          />
+          <select
+            className="p-2 border border-[var(--line)] rounded-lg"
+            value={f.waste}
+            onChange={(e) => updateAt(i, { waste: e.target.value as WasteType })}
+          >
+            <option value="">Clasificar…</option>
+            {WASTE_TYPES.map((w) => (
+              <option key={w} value={w}>
+                {w}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className="w-[32px] h-[32px] border border-[var(--line)] rounded-lg bg-white"
+            onClick={() => deleteStep(i)}
+            aria-label={`Eliminar paso ${i + 1}`}
+          >
+            ×
+          </button>
+        </div>
+      ))}
+
+      <button
+        type="button"
+        className="border border-[var(--line)] rounded-lg px-3 py-2 bg-white mt-2"
+        onClick={addStep}
+      >
+        + Agregar paso
+      </button>
+    </div>
+  );
+}

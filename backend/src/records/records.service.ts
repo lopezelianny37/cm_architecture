@@ -13,7 +13,18 @@ const UPDATE_FIELD_MAP: Record<keyof UpdateRecordDto, string> = {
   businessReferent: 'business_referent',
   prepValue: 'prep_value',
   prepBarrier: 'prep_barrier',
+  behaviors: 'behaviors',
+  flowSteps: 'flow_steps',
 };
+
+const DEFAULT_BEHAVIORS = () =>
+  Array.from({ length: 8 }, () => ({ state: 'na', fact: '', artifact: '' }));
+
+const DEFAULT_FLOW_STEPS = () => [
+  { step: 'Recibe / identifica la necesidad', objective: '', with: '', out: '', waste: '' },
+  { step: 'Comprende / analiza', objective: '', with: '', out: '', waste: '' },
+  { step: 'Explora / recomienda', objective: '', with: '', out: '', waste: '' },
+];
 
 @Injectable()
 export class RecordsService {
@@ -75,6 +86,8 @@ export class RecordsService {
         macrodomain: dto.macrodomain ?? null,
         initiative_name: dto.initiativeName ?? null,
         business_referent: dto.businessReferent ?? null,
+        behaviors: DEFAULT_BEHAVIORS(),
+        flow_steps: DEFAULT_FLOW_STEPS(),
       })
       .select()
       .single();
