@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gemba-backend
+    environment:
+      NODE_ENV: development
+      SUPABASE_URL: ${SUPABASE_URL:-http://host.docker.internal:54321}
+      SUPABASE_KEY: ${SUPABASE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNTU5NzIwMCwiZXhwIjoxNzI3MTc1NjAwfQ.1234567890}
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/src:/app/src
+      - /app/node_modules
+    command: npm run start:dev
+    networks:
+      - gemba-network
+
+networks:
+  gemba-network:
+    driver: bridge
+

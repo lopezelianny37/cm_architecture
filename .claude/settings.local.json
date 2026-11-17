@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(herdr pane *)",
+      "Bash(herdr agent *)",
+      "Bash(claude mcp *)"
+    ]
+  }
+}

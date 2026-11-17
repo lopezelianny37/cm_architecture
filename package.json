@@ -1,0 +1,33 @@
+{
+  "name": "gemba-arquitectura-ib",
+  "version": "0.1.0",
+  "description": "Gemba Arquitectura IB - Research & tracking platform for observing real application of architect role",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "test": "jest",
+    "test:e2e": "playwright test",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "concurrently": "^8.0.0",
+    "jest": "^29.5.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "@playwright/test": "^1.40.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
