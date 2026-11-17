@@ -3,7 +3,8 @@
     "allow": [
       "Bash(herdr pane *)",
       "Bash(herdr agent *)",
-      "Bash(claude mcp *)"
+      "Bash(claude mcp *)",
+      "Bash(curl -s http://localhost:3000/health)"
     ]
   }
 }
