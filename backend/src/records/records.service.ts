@@ -15,6 +15,15 @@ const UPDATE_FIELD_MAP: Record<keyof UpdateRecordDto, string> = {
   prepBarrier: 'prep_barrier',
   behaviors: 'behaviors',
   flowSteps: 'flow_steps',
+  debriefStrength: 'debrief_strength',
+  debriefSelfgap: 'debrief_selfgap',
+  debriefBlock: 'debrief_block',
+  debriefTry: 'debrief_try',
+  flowQa: 'flow_qa',
+  gaps: 'gaps',
+  conditions: 'conditions',
+  csatScore: 'csat_score',
+  csatComment: 'csat_comment',
 };
 
 const DEFAULT_BEHAVIORS = () =>
@@ -25,6 +34,11 @@ const DEFAULT_FLOW_STEPS = () => [
   { step: 'Comprende / analiza', objective: '', with: '', out: '', waste: '' },
   { step: 'Explora / recomienda', objective: '', with: '', out: '', waste: '' },
 ];
+
+const DEFAULT_FLOW_QA = () => ['', '', '', ''];
+
+const DEFAULT_CONDITIONS = () =>
+  Array.from({ length: 7 }, () => ({ status: '', evidence: '' }));
 
 @Injectable()
 export class RecordsService {
@@ -88,6 +102,9 @@ export class RecordsService {
         business_referent: dto.businessReferent ?? null,
         behaviors: DEFAULT_BEHAVIORS(),
         flow_steps: DEFAULT_FLOW_STEPS(),
+        flow_qa: DEFAULT_FLOW_QA(),
+        gaps: [],
+        conditions: DEFAULT_CONDITIONS(),
       })
       .select()
       .single();

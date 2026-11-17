@@ -5,8 +5,13 @@ import { AutoSaveField } from '../components/form/AutoSaveField';
 import { MotivatorList } from '../components/form/MotivatorList';
 import { BehaviorObservations } from '../components/form/BehaviorObservations';
 import { FlowTable } from '../components/form/FlowTable';
+import { DebriefSection } from '../components/form/DebriefSection';
+import { FlowQA } from '../components/form/FlowQA';
+import { GapsTable } from '../components/form/GapsTable';
+import { ConditionsChecklist } from '../components/form/ConditionsChecklist';
+import { CsatSection } from '../components/form/CsatSection';
 import { Toast } from '../components/Toast';
-import type { BehaviorObservation, FlowStep } from '../types/api';
+import type { BehaviorObservation, ConditionEntry, FlowStep, Gap } from '../types/api';
 
 interface FormViewProps {
   recordId: string;
@@ -19,6 +24,10 @@ function defaultBehaviors(): BehaviorObservation[] {
   return Array.from({ length: 8 }, () => ({ state: 'na', fact: '', artifact: '' }));
 }
 
+function defaultConditions(): ConditionEntry[] {
+  return Array.from({ length: 7 }, () => ({ status: '', evidence: '' }));
+}
+
 export function FormView({ recordId, onBack }: FormViewProps) {
   const { record, motivators, setMotivators, loading, updateField, saveMotivators, toast } =
     useRecordForm(recordId);
@@ -26,35 +35,84 @@ export function FormView({ recordId, onBack }: FormViewProps) {
   const [activeTab, setActiveTab] = useState<TabId>('prep');
   const [behaviors, setBehaviors] = useState<BehaviorObservation[] | null>(null);
   const [flowSteps, setFlowSteps] = useState<FlowStep[] | null>(null);
+  const [flowQa, setFlowQa] = useState<string[] | null>(null);
+  const [gaps, setGaps] = useState<Gap[] | null>(null);
+  const [conditions, setConditions] = useState<ConditionEntry[] | null>(null);
 
-  useAutoSave(motivators, saveMotivators);
-  useAutoSave(behaviors, (v) => {
-    if (v) updateField({ behaviors: v });
-  });
-  useAutoSave(flowSteps, (v) => {
-    if (v) updateField({ flowSteps: v });
-  });
+  const dataReady = !loading && record !== null;
+
+  useAutoSave(motivators, saveMotivators, { enabled: dataReady });
+  useAutoSave(
+    behaviors,
+    (v) => {
+      if (v) updateField({ behaviors: v });
+    },
+    { enabled: dataReady && behaviors !== null },
+  );
+  useAutoSave(
+    flowSteps,
+    (v) => {
+      if (v) updateField({ flowSteps: v });
+    },
+    { enabled: dataReady && flowSteps !== null },
+  );
+  useAutoSave(
+    flowQa,
+    (v) => {
+      if (v) updateField({ flowQa: v });
+    },
+    { enabled: dataReady && flowQa !== null },
+  );
+  useAutoSave(
+    gaps,
+    (v) => {
+      if (v) updateField({ gaps: v });
+    },
+    { enabled: dataReady && gaps !== null },
+  );
+  useAutoSave(
+    conditions,
+    (v) => {
+      if (v) updateField({ conditions: v });
+    },
+    { enabled: dataReady && conditions !== null },
+  );
 
   useEffect(() => {
-    if (record && behaviors === null) {
-      setBehaviors(record.behaviors ?? defaultBehaviors());
-    }
-    if (record && flowSteps === null) {
-      setFlowSteps(record.flow_steps ?? []);
-    }
+    if (!record) return;
+    if (behaviors === null) setBehaviors(record.behaviors ?? defaultBehaviors());
+    if (flowSteps === null) setFlowSteps(record.flow_steps ?? []);
+    if (flowQa === null) setFlowQa(record.flow_qa ?? ['', '', '', '']);
+    if (gaps === null) setGaps(record.gaps ?? []);
+    if (conditions === null) setConditions(record.conditions ?? defaultConditions());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [record]);
 
-  if (loading || !record || behaviors === null || flowSteps === null) {
+  if (
+    loading ||
+    !record ||
+    behaviors === null ||
+    flowSteps === null ||
+    flowQa === null ||
+    gaps === null ||
+    conditions === null
+  ) {
     return <div className="max-w-[1280px] mx-auto p-5">Cargando…</div>;
   }
 
   const currentBehaviors = behaviors;
   const currentFlowSteps = flowSteps;
+  const currentFlowQa = flowQa;
+  const currentGaps = gaps;
+  const currentConditions = conditions;
 
   const hasObservedBehavior = currentBehaviors.some((b) => b.state !== 'na');
   const hasFlowStep = currentFlowSteps.some((f) => f.objective || f.out);
   const diagReady = hasObservedBehavior && hasFlowStep;
+
+  function handleScoreChange(score: number | null) {
+    updateField({ csatScore: score });
+  }
 
   return (
     <div className="max-w-[1280px] mx-auto p-5 flex flex-col gap-[14px]">
@@ -122,13 +180,20 @@ export function FormView({ recordId, onBack }: FormViewProps) {
         </button>
         <button
           type="button"
-          disabled
+          disabled={!diagReady}
+          onClick={() => diagReady && setActiveTab('diag')}
           title={
             diagReady
-              ? 'Disponible en Fase 5'
+              ? undefined
               : 'Registra al menos 1 comportamiento observado y 1 paso de flujo con objetivo/salida antes de continuar'
           }
-          className="rounded-lg px-[11px] py-2 font-extrabold border border-[var(--line)] bg-white text-[#44516a] opacity-50 cursor-not-allowed"
+          className={`rounded-lg px-[11px] py-2 font-extrabold border ${
+            !diagReady
+              ? 'bg-white border-[var(--line)] text-[#44516a] opacity-50 cursor-not-allowed'
+              : activeTab === 'diag'
+                ? 'bg-[var(--navy)] border-[var(--navy)] text-white'
+                : 'bg-white border-[var(--line)] text-[#44516a]'
+          }`}
         >
           2 · Diagnóstico {!diagReady && '⚠'}
         </button>
@@ -194,6 +259,57 @@ export function FormView({ recordId, onBack }: FormViewProps) {
               proceso real, no el proceso ideal.
             </div>
             <FlowTable flowSteps={currentFlowSteps} onChange={setFlowSteps} />
+          </div>
+        </>
+      )}
+
+      {activeTab === 'diag' && diagReady && (
+        <>
+          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+            <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[var(--sky)] text-[var(--blue)] mb-2">
+              Debrief
+            </span>
+            <h2 className="text-[19px] m-0 mb-3">El arquitecto habla primero</h2>
+            <DebriefSection
+              strength={record.debrief_strength ?? ''}
+              selfgap={record.debrief_selfgap ?? ''}
+              block={record.debrief_block ?? ''}
+              tryNext={record.debrief_try ?? ''}
+              onSaveStrength={(v) => updateField({ debriefStrength: v })}
+              onSaveSelfgap={(v) => updateField({ debriefSelfgap: v })}
+              onSaveBlock={(v) => updateField({ debriefBlock: v })}
+              onSaveTry={(v) => updateField({ debriefTry: v })}
+            />
+            <h3 className="mt-4 mb-2">Conversación sobre el flujo real</h3>
+            <FlowQA answers={currentFlowQa} onChange={setFlowQa} />
+          </div>
+
+          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+            <h2 className="text-[19px] m-0 mb-2">Brechas priorizadas</h2>
+            <div className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mb-3">
+              Clasifica el hallazgo por causa principal. No todo se resuelve formando al
+              arquitecto.
+            </div>
+            <GapsTable gaps={currentGaps} onChange={setGaps} />
+          </div>
+
+          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+            <h2 className="text-[19px] m-0 mb-2">Condiciones para ejercer el rol</h2>
+            <p className="text-[var(--mut)] mb-2">
+              Permite distinguir brechas personales de barreras del sistema. Una condición no
+              habilitada no debe cargarse solo al arquitecto.
+            </p>
+            <ConditionsChecklist conditions={currentConditions} onChange={setConditions} />
+          </div>
+
+          <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+            <h2 className="text-[19px] m-0 mb-2">Satisfacción del arquitecto (CSAT)</h2>
+            <CsatSection
+              score={record.csat_score}
+              comment={record.csat_comment ?? ''}
+              onScoreChange={handleScoreChange}
+              onSaveComment={(v) => updateField({ csatComment: v })}
+            />
           </div>
         </>
       )}

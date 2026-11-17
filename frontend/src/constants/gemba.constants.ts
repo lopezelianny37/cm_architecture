@@ -83,3 +83,43 @@ export const TYPES: string[] = [
 export const BEH_SHORT_LABELS: string[] = BEH_NAMES.map((name) =>
   name.split(' ').slice(0, 3).join(' '),
 );
+
+export interface ConditionDef {
+  name: string;
+  question: string;
+}
+
+export const COND: ConditionDef[] = [
+  { name: 'Acceso a Negocio', question: '¿Tuvo acceso directo al referente cuando lo necesitó?' },
+  {
+    name: 'Participación temprana',
+    question: '¿Arquitectura entró antes de que problema y solución estuvieran cerrados?',
+  },
+  {
+    name: 'Información',
+    question: '¿Tuvo estrategia, KPIs, portafolio, dependencias y capacidades disponibles?',
+  },
+  {
+    name: 'Tiempo / prioridad',
+    question: '¿Tuvo espacio para discovery y análisis, o las urgencias lo impidieron?',
+  },
+  {
+    name: 'Claridad de rol',
+    question: '¿Estaba claro qué lideraba, en qué contribuía y qué acompañaba Arquitectura?',
+  },
+  {
+    name: 'Patrocinio / liderazgo',
+    question: '¿El entorno respaldó que desafiara supuestos y cocreara con Negocio?',
+  },
+  {
+    name: 'Foros y gobernanza',
+    question: '¿Los foros permitieron explorar alternativas y tomar decisiones con evidencia?',
+  },
+];
+
+export const FLOWQ: string[] = [
+  '¿En qué paso entró Negocio?',
+  '¿Cuándo apareció una solución?',
+  '¿Qué paso generó mayor espera o retrabajo?',
+  '¿Qué paso faltó y hubiera cambiado la decisión?',
+];

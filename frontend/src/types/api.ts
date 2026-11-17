@@ -51,6 +51,20 @@ export interface FlowStep {
   waste: WasteType;
 }
 
+export interface Gap {
+  text: string;
+  type: string;
+  evidence: string;
+  condition: string;
+}
+
+export type ConditionStatus = '' | 'si' | 'par' | 'no';
+
+export interface ConditionEntry {
+  status: ConditionStatus;
+  evidence: string;
+}
+
 export interface RecordDetail {
   id: string;
   architect_name: string | null;
@@ -61,6 +75,15 @@ export interface RecordDetail {
   prep_barrier: string | null;
   behaviors: BehaviorObservation[] | null;
   flow_steps: FlowStep[] | null;
+  debrief_strength: string | null;
+  debrief_selfgap: string | null;
+  debrief_block: string | null;
+  debrief_try: string | null;
+  flow_qa: string[] | null;
+  gaps: Gap[] | null;
+  conditions: ConditionEntry[] | null;
+  csat_score: number | null;
+  csat_comment: string | null;
   isComplete: boolean;
 }
 
@@ -73,6 +96,15 @@ export interface UpdateRecordPayload {
   prepBarrier?: string;
   behaviors?: BehaviorObservation[];
   flowSteps?: FlowStep[];
+  debriefStrength?: string;
+  debriefSelfgap?: string;
+  debriefBlock?: string;
+  debriefTry?: string;
+  flowQa?: string[];
+  gaps?: Gap[];
+  conditions?: ConditionEntry[];
+  csatScore?: number | null;
+  csatComment?: string;
 }
 
 export interface MotivatorItem {
