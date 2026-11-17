@@ -11,6 +11,7 @@ import { GapsTable } from '../components/form/GapsTable';
 import { ConditionsChecklist } from '../components/form/ConditionsChecklist';
 import { CsatSection } from '../components/form/CsatSection';
 import { Toast } from '../components/Toast';
+import { exportOneRecord } from '../lib/exportImport';
 import type { BehaviorObservation, ConditionEntry, FlowStep, Gap } from '../types/api';
 
 interface FormViewProps {
@@ -114,6 +115,15 @@ export function FormView({ recordId, onBack }: FormViewProps) {
     updateField({ csatScore: score });
   }
 
+  async function handleExportRecord() {
+    try {
+      await exportOneRecord(recordId);
+      toast.show('Respaldo descargado');
+    } catch {
+      toast.show('No se pudo descargar el respaldo');
+    }
+  }
+
   return (
     <div className="max-w-[1280px] mx-auto p-5 flex flex-col gap-[14px]">
       <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
@@ -145,13 +155,22 @@ export function FormView({ recordId, onBack }: FormViewProps) {
         </div>
         <div className="flex justify-between items-center gap-[9px] mt-3 flex-wrap">
           <span className="text-[11px] text-[var(--green)]">✓ Guardado automático</span>
-          <button
-            type="button"
-            className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white"
-            onClick={onBack}
-          >
-            Volver al home
-          </button>
+          <div className="flex gap-[9px]">
+            <button
+              type="button"
+              className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white"
+              onClick={handleExportRecord}
+            >
+              Descargar respaldo completo
+            </button>
+            <button
+              type="button"
+              className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white"
+              onClick={onBack}
+            >
+              Volver al home
+            </button>
+          </div>
         </div>
       </div>
 

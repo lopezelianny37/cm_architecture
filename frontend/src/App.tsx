@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { AUTH_EXPIRED_EVENT, getToken } from './lib/apiClient';
 import { login, signup, logout } from './lib/authSession';
+import { exportAllRecords, importBackupFile } from './lib/exportImport';
+import { useToast } from './hooks/useToast';
 import { Home } from './pages/Home';
 import { FormView } from './pages/FormView';
+import { ImportModal } from './components/ImportModal';
+import { Toast } from './components/Toast';
 
 // TODO Fase 7/9: reemplazar por el flujo de login/registro real del SPEC.
 function LoginBridge({
@@ -85,6 +89,30 @@ function App() {
   const [authenticated, setAuthenticated] = useState(() => getToken() != null);
   const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [homeKey, setHomeKey] = useState(0);
+  const toast = useToast();
+
+  async function handleExportAll() {
+    try {
+      await exportAllRecords();
+      toast.show('Respaldo descargado');
+    } catch {
+      toast.show('No se pudo descargar la información');
+    }
+  }
+
+  async function handleImport(file: File) {
+    try {
+      await importBackupFile(file);
+      toast.show('Información cargada');
+      setImportModalOpen(false);
+      setSelectedRecordId(null);
+      setHomeKey((k) => k + 1);
+    } catch (err) {
+      toast.show(err instanceof Error ? err.message : 'El archivo no es un respaldo válido');
+    }
+  }
 
   useEffect(() => {
     function handleAuthExpired() {
@@ -118,22 +146,42 @@ function App() {
               Observación y seguimiento de la aplicación real del nuevo rol
             </small>
           </div>
-          <button
-            className="ml-auto border border-[var(--line)] rounded-lg px-3 py-1"
-            onClick={() => {
-              logout();
-              setAuthenticated(false);
-            }}
-          >
-            Salir
-          </button>
+          <nav className="ml-auto flex gap-[6px] flex-wrap">
+            <button
+              className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white font-bold text-[#44516a]"
+              onClick={handleExportAll}
+            >
+              Descargar información
+            </button>
+            <button
+              className="border border-[var(--line)] rounded-lg px-3 py-1 bg-white font-bold text-[#44516a]"
+              onClick={() => setImportModalOpen(true)}
+            >
+              Cargar información
+            </button>
+            <button
+              className="border border-[var(--line)] rounded-lg px-3 py-1"
+              onClick={() => {
+                logout();
+                setAuthenticated(false);
+              }}
+            >
+              Salir
+            </button>
+          </nav>
         </div>
       </header>
       {selectedRecordId ? (
         <FormView recordId={selectedRecordId} onBack={() => setSelectedRecordId(null)} />
       ) : (
-        <Home onOpenRecord={setSelectedRecordId} />
+        <Home key={homeKey} onOpenRecord={setSelectedRecordId} />
       )}
+      <ImportModal
+        open={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onImport={handleImport}
+      />
+      <Toast message={toast.message} />
     </>
   );
 }

@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { RecordsModule } from './records/records.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SettingsModule } from './settings/settings.module';
+import { ImportExportModule } from './import-export/import-export.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SettingsModule } from './settings/settings.module';
     RecordsModule,
     DashboardModule,
     SettingsModule,
+    ImportExportModule,
   ],
   controllers: [AppController],
 })
