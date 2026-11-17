@@ -67,18 +67,7 @@ export const MOT: MotivatorDef[] = [
   { name: 'Relaciones', description: 'Tengo buenas relaciones sociales con las personas en mi trabajo.' },
 ];
 
-export const TYPES: string[] = [
-  'Conocimiento',
-  'Habilidad / skill',
-  'Comportamiento',
-  'Motivación',
-  'Proceso',
-  'Acceso',
-  'Prioridad / capacidad',
-  'Rol / responsabilidades',
-  'Información',
-  'Gobernanza',
-];
+export const TYPES: string[] = ['Conocimiento', 'Competencia'];
 
 export const COND: ConditionDef[] = [
   { name: 'Acceso a Negocio', question: '¿Tuvo acceso directo al referente cuando lo necesitó?' },

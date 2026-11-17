@@ -300,6 +300,12 @@ export function FormView({ recordId, onBack }: FormViewProps) {
 
           <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <h2 className="text-[19px] m-0 mb-2">Brechas priorizadas</h2>
+            <p className="text-[var(--mut)] mb-2">
+              <b>Conocimiento</b> se refiere a ¿Qué sabe? Es decir, no sabe o no conoce algo
+              necesario, ya sea información, conceptos y marcos que la persona debe comprender.{' '}
+              <b>Competencia</b> se refiere a que no integra el conocimiento ni lo ejecuta;
+              responde a ¿Qué logra hacer eficazmente en la práctica?
+            </p>
             <div className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mb-3">
               Clasifica el hallazgo por causa principal. No todo se resuelve formando al
               arquitecto.

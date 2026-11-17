@@ -66,18 +66,7 @@ export const MOT_NAMES: string[] = [
   'Relaciones',
 ];
 
-export const TYPES: string[] = [
-  'Conocimiento',
-  'Habilidad / skill',
-  'Comportamiento',
-  'Motivación',
-  'Proceso',
-  'Acceso',
-  'Prioridad / capacidad',
-  'Rol / responsabilidades',
-  'Información',
-  'Gobernanza',
-];
+export const TYPES: string[] = ['Conocimiento', 'Competencia'];
 
 /** Primeras 3 palabras de cada behavior, para etiquetas cortas en el radar (igual al prototipo). */
 export const BEH_SHORT_LABELS: string[] = BEH_NAMES.map((name) =>

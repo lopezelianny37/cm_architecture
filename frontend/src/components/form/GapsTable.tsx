@@ -41,6 +41,13 @@ export function GapsTable({ gaps, onChange }: GapsTableProps) {
             value={g.type}
             onChange={(e) => updateAt(i, { type: e.target.value })}
           >
+            {/* A gap saved before the type list changed may have a value
+                that's no longer in TYPES (e.g. "Proceso"). Keep it as its
+                own option instead of silently blanking the select — the
+                value only changes when the user explicitly picks a new one. */}
+            {g.type && !TYPES.includes(g.type) && (
+              <option value={g.type}>{g.type} (tipo anterior)</option>
+            )}
             {TYPES.map((t) => (
               <option key={t} value={t}>
                 {t}
