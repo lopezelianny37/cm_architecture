@@ -1,0 +1,26 @@
+export function Hero() {
+  return (
+    <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+      <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[#fff0f1] text-[var(--red)]">
+        Hipótesis 1 · alcance reducido
+      </span>
+      <h1 className="text-[26px] mt-[7px] mb-[7px]">
+        Del entendimiento a la aplicación real del nuevo rol
+      </h1>
+      <p className="text-[15px] m-0 text-[var(--mut)]">
+        No busca puntuar personas. Busca identificar qué necesita cambiar en el arquitecto y qué
+        necesita cambiar en el sistema para que el nuevo rol pueda ejercerse.
+      </p>
+      <div className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mt-3">
+        <b>Hipótesis de observación:</b> Si acompañamos al arquitecto en su trabajo diario para
+        identificar y cerrar brechas de comportamiento, aumentará su capacidad para cocrear con
+        negocio y tomar decisiones más informadas y orientadas a valor.
+      </div>
+      <div className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mt-3">
+        <b>Hipótesis de acompañamiento:</b> Si proporcionamos acompañamiento focalizado a los
+        arquitectos a partir de las brechas observadas en situaciones reales, entonces podrán
+        incorporar y aplicar comportamientos del nuevo rol en iniciativas reales.
+      </div>
+    </div>
+  );
+}

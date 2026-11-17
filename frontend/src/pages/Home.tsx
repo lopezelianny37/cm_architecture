@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useDashboardData } from '../hooks/useDashboardData';
+import { Hero } from '../components/dashboard/Hero';
 import { MetricsCards } from '../components/dashboard/MetricsCards';
 import { Filters } from '../components/dashboard/Filters';
 import { ScopeTracker } from '../components/dashboard/ScopeTracker';
@@ -40,30 +41,33 @@ export function Home({ onOpenRecord }: HomeProps) {
 
   return (
     <div className="max-w-[1280px] mx-auto p-5 flex flex-col gap-[14px]">
-      <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
-        <h3 className="text-[15px] m-0 mb-2">Avance del ciclo</h3>
-        <ScopeTracker
-          targetScope={settings.targetScope}
-          currentCount={totalRecordsInScope}
-          onTargetChange={updateTargetScope}
-        />
-        <p className="text-[var(--mut)] mt-2">
-          El alcance crece por ciclos: MVP de 5 arquitectos → piloto ampliado → expansión → escala,
-          según evidencia.
-        </p>
-        <div className="flex gap-2 mt-2">
-          <input
-            className="border border-[var(--line)] rounded-lg p-2 flex-1"
-            placeholder="Nombre del arquitecto"
-            value={newArchitectName}
-            onChange={(e) => setNewArchitectName(e.target.value)}
+      <div className="grid grid-cols-1 md:grid-cols-[1.45fr_0.8fr] gap-[14px]">
+        <Hero />
+        <div className="bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+          <h3 className="text-[15px] m-0 mb-2">Avance del ciclo</h3>
+          <ScopeTracker
+            targetScope={settings.targetScope}
+            currentCount={totalRecordsInScope}
+            onTargetChange={updateTargetScope}
           />
-          <button
-            className="border-0 rounded-lg px-[13px] py-2 font-extrabold bg-[var(--red)] text-white"
-            onClick={handleCreate}
-          >
-            + Nuevo arquitecto / ciclo
-          </button>
+          <p className="text-[var(--mut)] mt-2">
+            El alcance crece por ciclos: MVP de 5 arquitectos → piloto ampliado → expansión →
+            escala, según evidencia.
+          </p>
+          <div className="flex gap-2 mt-2">
+            <input
+              className="border border-[var(--line)] rounded-lg p-2 flex-1"
+              placeholder="Nombre del arquitecto"
+              value={newArchitectName}
+              onChange={(e) => setNewArchitectName(e.target.value)}
+            />
+            <button
+              className="border-0 rounded-lg px-[13px] py-2 font-extrabold bg-[var(--red)] text-white"
+              onClick={handleCreate}
+            >
+              + Nuevo arquitecto / ciclo
+            </button>
+          </div>
         </div>
       </div>
 

@@ -84,6 +84,9 @@ function App() {
         <div className="max-w-[1280px] mx-auto px-[18px] py-[10px] flex items-center gap-[14px]">
           <div className="font-extrabold text-[var(--navy)] text-[16px]">
             Experimento Gemba · Arquitectura IB
+            <small className="block text-[var(--mut)] text-[11px] font-medium">
+              Observación y seguimiento de la aplicación real del nuevo rol
+            </small>
           </div>
           <button
             className="ml-auto border border-[var(--line)] rounded-lg px-3 py-1"
