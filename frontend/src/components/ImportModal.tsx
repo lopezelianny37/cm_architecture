@@ -32,12 +32,10 @@ export function ImportModal({ open, onClose, onImport }: ImportModalProps) {
       <div className="w-full max-w-[560px] bg-white rounded-2xl p-[18px] shadow-[var(--shadow)]">
         <h2 className="text-[19px] m-0 mb-2">Cargar información</h2>
         <p className="text-[var(--mut)] mb-2">
-          Selecciona el archivo JSON descargado desde este modelo.
+          Selecciona el archivo JSON exportado (respaldo completo o un arquitecto individual).
         </p>
-        <p className="p-[11px_13px] border-l-4 border-[var(--red)] bg-[#fff0f1] text-[var(--red)] rounded-lg mb-3">
-          <b>Esta acción borra PERMANENTEMENTE todos tus registros actuales</b> y los reemplaza
-          por los del archivo. No se puede deshacer. Si no estás seguro, exportá un respaldo
-          primero con "Descargar información".
+        <p className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mb-3">
+          Se agregará a tu información existente, sin eliminar nada.
         </p>
         <div className="border-2 border-dashed border-[var(--line)] rounded-xl p-[18px] text-center">
           <input

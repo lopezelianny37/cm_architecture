@@ -60,18 +60,9 @@ describe('ImportExportService.validatePayload', () => {
     expect(() => service.validatePayload(backup)).toThrow('El archivo no es un respaldo válido');
   });
 
-  it('rejects duplicate architect names within the same backup with a clear message', () => {
+  it('allows duplicate architect names within the same backup (import always appends, no dedup)', () => {
     const backup = validBackup();
     backup.records.push({ ...backup.records[0] });
-    expect(() => service.validatePayload(backup)).toThrow(
-      'El respaldo contiene nombres de arquitecto duplicados',
-    );
-  });
-
-  it('allows duplicate empty architect names to pass (only non-empty names are checked)', () => {
-    const backup = validBackup();
-    backup.records[0].meta!.arch = '';
-    backup.records.push({ ...backup.records[0], meta: { ...backup.records[0].meta, arch: '' } });
     expect(() => service.validatePayload(backup)).not.toThrow();
   });
 });
@@ -80,8 +71,7 @@ describe('ImportExportService.importBackup', () => {
   function makeService() {
     const insertedRecords: any[] = [];
     const insertedMotivators: any[] = [];
-    const deleteEq = jest.fn().mockResolvedValue({ error: null });
-    const deleteMock = jest.fn().mockReturnValue({ eq: deleteEq });
+    const deleteMock = jest.fn();
 
     const fromMock = jest.fn().mockImplementation((table: string) => {
       if (table === 'gemba_records') {
@@ -118,18 +108,31 @@ describe('ImportExportService.importBackup', () => {
     } as unknown as DatabaseService;
 
     const service = new ImportExportService(db);
-    return { service, insertedRecords, insertedMotivators, deleteEq };
+    return { service, insertedRecords, insertedMotivators, deleteMock };
   }
 
-  it('deletes the user\'s existing records before inserting the imported ones (replace semantics)', async () => {
-    const { service, deleteEq, insertedRecords } = makeService();
+  it('never deletes existing records — only inserts (always-append semantics)', async () => {
+    const { service, deleteMock, insertedRecords } = makeService();
 
     await service.importBackup('token', 'user-1', validBackup());
 
-    expect(deleteEq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(deleteMock).not.toHaveBeenCalled();
     expect(insertedRecords).toHaveLength(1);
     expect(insertedRecords[0].architect_name).toBe('Ana Pérez');
     expect(insertedRecords[0].user_id).toBe('user-1');
+  });
+
+  it('inserts every record even when the architect name repeats, with no dedup', async () => {
+    const backup = validBackup();
+    backup.records.push({ ...backup.records[0] });
+
+    const { service, insertedRecords } = makeService();
+    const result = await service.importBackup('token', 'user-1', backup);
+
+    expect(insertedRecords).toHaveLength(2);
+    expect(insertedRecords[0].architect_name).toBe('Ana Pérez');
+    expect(insertedRecords[1].architect_name).toBe('Ana Pérez');
+    expect(result).toEqual({ imported: 2 });
   });
 
   it('imports the motivators for each record alongside it', async () => {

@@ -205,3 +205,98 @@ describe('RecordsService.getMotivatorResult', () => {
     expect(queryBuilder.ilike).toHaveBeenCalledWith('email', 'Ana@Example.com');
   });
 });
+
+describe('RecordsService.create/update — architect-name uniqueness (app-level, not a DB constraint)', () => {
+  /** Queues one result per `client.from(...)` call, in order: the
+   * duplicate-name pre-check first, then the actual insert/update. */
+  function makeService(...queuedResults: Array<{ data: any; error: any }>) {
+    let callIndex = 0;
+    const fromMock = jest.fn().mockImplementation(() => {
+      const result = queuedResults[callIndex++];
+      const query: any = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        neq: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        insert: jest.fn().mockReturnThis(),
+        update: jest.fn().mockReturnThis(),
+        maybeSingle: jest.fn().mockResolvedValue(result),
+        single: jest.fn().mockResolvedValue(result),
+      };
+      // The duplicate-name pre-check awaits the query directly (ends in
+      // .limit(1), no .maybeSingle()/.single() call) — make it thenable.
+      query.then = (resolve: any) => resolve(result);
+      return query;
+    });
+    const client = { from: fromMock };
+    const db = {
+      getUserClient: jest.fn().mockReturnValue(client),
+    } as unknown as DatabaseService;
+    const motivatorsService = {
+      seedForRecord: jest.fn().mockResolvedValue(undefined),
+    } as unknown as MotivatorsService;
+    const service = new RecordsService(db, motivatorsService);
+    return { service, fromMock };
+  }
+
+  it('create() throws ConflictException when an architect with that name already exists', async () => {
+    const { service } = makeService({ data: [{ id: 'existing-1' }], error: null });
+
+    await expect(
+      service.create('token', 'user-1', { architectName: 'Ana Pérez' } as any),
+    ).rejects.toThrow('Architect already exists');
+  });
+
+  it('create() succeeds when no name collision exists', async () => {
+    const { service } = makeService(
+      { data: [], error: null },
+      { data: { id: 'new-1', architect_name: 'Ana Pérez' }, error: null },
+    );
+
+    const result = await service.create('token', 'user-1', { architectName: 'Ana Pérez' } as any);
+    expect(result.id).toBe('new-1');
+  });
+
+  it('update() throws ConflictException when renaming to a name another record already has', async () => {
+    const { service } = makeService({ data: [{ id: 'other-record' }], error: null });
+
+    await expect(
+      service.update('token', 'record-1', { architectName: 'Ana Pérez' } as any),
+    ).rejects.toThrow('Architect already exists');
+  });
+
+  it('update() excludes the record itself from the collision check (renaming to its own current name is fine)', async () => {
+    const { service, fromMock } = makeService(
+      { data: [], error: null },
+      { data: { id: 'record-1', architect_name: 'Ana Pérez' }, error: null },
+    );
+
+    await service.update('token', 'record-1', { architectName: 'Ana Pérez' } as any);
+
+    const preCheckQuery = fromMock.mock.results[0].value;
+    expect(preCheckQuery.neq).toHaveBeenCalledWith('id', 'record-1');
+  });
+
+  it('does not throw a false positive when 2+ existing records already share a name (e.g. from an earlier import)', async () => {
+    const { service } = makeService({
+      data: [{ id: 'dup-1' }, { id: 'dup-2' }],
+      error: null,
+    });
+
+    await expect(
+      service.create('token', 'user-1', { architectName: 'Imported Architect' } as any),
+    ).rejects.toThrow('Architect already exists');
+  });
+
+  it('update() skips the duplicate-name check entirely when architectName is not part of the patch', async () => {
+    const { service, fromMock } = makeService({
+      data: { id: 'record-1', prep_value: 'nuevo valor' },
+      error: null,
+    });
+
+    await service.update('token', 'record-1', { prepValue: 'nuevo valor' } as any);
+
+    // Only one client.from() call (the update itself) — no pre-check call.
+    expect(fromMock).toHaveBeenCalledTimes(1);
+  });
+});

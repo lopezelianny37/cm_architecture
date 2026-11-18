@@ -91,8 +91,39 @@ export class RecordsService {
     };
   }
 
+  /**
+   * Architect-name uniqueness is enforced here, not by a DB constraint
+   * (dropped — see supabase/migrations/20261119_import_always_appends.sql,
+   * which needs duplicate names allowed for imported records). Manual
+   * creation/renaming should still catch an accidental duplicate.
+   *
+   * Uses .limit(1) + array length rather than .maybeSingle(): an import can
+   * now legitimately leave 2+ records sharing a name, and .maybeSingle()
+   * errors (not just returns null) when a query matches more than one row.
+   */
+  private async assertArchitectNameAvailable(
+    client: ReturnType<DatabaseService['getUserClient']>,
+    architectName: string,
+    excludeId?: string,
+  ) {
+    let query = client
+      .from('gemba_records')
+      .select('id')
+      .eq('architect_name', architectName)
+      .limit(1);
+    if (excludeId) {
+      query = query.neq('id', excludeId);
+    }
+
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+    if (data && data.length > 0) throw new ConflictException('Architect already exists');
+  }
+
   async create(accessToken: string, userId: string, dto: CreateRecordDto) {
     const client = this.db.getUserClient(accessToken);
+
+    await this.assertArchitectNameAvailable(client, dto.architectName);
 
     const { data, error } = await client
       .from('gemba_records')
@@ -112,9 +143,6 @@ export class RecordsService {
       .single();
 
     if (error) {
-      if (error.code === '23505') {
-        throw new ConflictException('Architect already exists');
-      }
       throw new Error(error.message);
     }
 
@@ -194,6 +222,10 @@ export class RecordsService {
   async update(accessToken: string, id: string, dto: UpdateRecordDto) {
     const client = this.db.getUserClient(accessToken);
 
+    if (dto.architectName !== undefined) {
+      await this.assertArchitectNameAvailable(client, dto.architectName, id);
+    }
+
     const payload: Record<string, unknown> = {};
     for (const [key, column] of Object.entries(UPDATE_FIELD_MAP)) {
       const value = dto[key as keyof UpdateRecordDto];
@@ -211,9 +243,6 @@ export class RecordsService {
       .maybeSingle();
 
     if (error) {
-      if (error.code === '23505') {
-        throw new ConflictException('Architect already exists');
-      }
       throw new Error(error.message);
     }
 

@@ -172,17 +172,6 @@ export class ImportExportService {
       throw new BadRequestException('El archivo no es un respaldo válido');
     }
 
-    const names = instance.records
-      .map((r) => (r.meta?.arch ?? '').trim())
-      .filter((name) => name.length > 0);
-    const uniqueNames = new Set(names);
-
-    if (uniqueNames.size !== names.length) {
-      throw new BadRequestException(
-        'El respaldo contiene nombres de arquitecto duplicados',
-      );
-    }
-
     return instance;
   }
 
@@ -229,18 +218,17 @@ export class ImportExportService {
     return this.toExportShape(record as DbRecordRow);
   }
 
+  /**
+   * Always appends: inserts every record in the file as a new row,
+   * never touching the user's existing records. A record sharing an
+   * architect_name with an existing one (or another record in the same
+   * file) is simply created as its own duplicate — no dedup, by design
+   * (see the comment on the dropped UNIQUE constraint in
+   * supabase/migrations/20261119_import_always_appends.sql).
+   */
   async importBackup(accessToken: string, userId: string, raw: unknown) {
     const payload = this.validatePayload(raw);
     const client = this.db.getUserClient(accessToken);
-
-    const { error: deleteError } = await client
-      .from('gemba_records')
-      .delete()
-      .eq('user_id', userId);
-
-    if (deleteError) {
-      throw new Error(deleteError.message);
-    }
 
     let imported = 0;
 
