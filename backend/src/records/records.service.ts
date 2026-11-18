@@ -32,9 +32,9 @@ const DEFAULT_BEHAVIORS = () =>
   Array.from({ length: 8 }, () => ({ state: 'na', fact: '', artifact: '' }));
 
 const DEFAULT_FLOW_STEPS = () => [
-  { step: 'Recibe / identifica la necesidad', objective: '', with: '', out: '', waste: '' },
-  { step: 'Comprende / analiza', objective: '', with: '', out: '', waste: '' },
-  { step: 'Explora / recomienda', objective: '', with: '', out: '', waste: '' },
+  { step: 'Recibe / identifica la necesidad', objective: '', with: '', out: '', waste: '', observations: '' },
+  { step: 'Comprende / analiza', objective: '', with: '', out: '', waste: '', observations: '' },
+  { step: 'Explora / recomienda', objective: '', with: '', out: '', waste: '', observations: '' },
 ];
 
 const DEFAULT_FLOW_QA = () => ['', '', '', ''];

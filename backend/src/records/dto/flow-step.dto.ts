@@ -22,4 +22,8 @@ export class FlowStepDto {
   @IsOptional()
   @IsIn(WASTE_TYPES)
   waste?: string;
+
+  @IsOptional()
+  @IsString()
+  observations?: string;
 }

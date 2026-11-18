@@ -7,7 +7,7 @@ interface FlowTableProps {
 }
 
 function emptyStep(): FlowStep {
-  return { step: '', objective: '', with: '', out: '', waste: '' };
+  return { step: '', objective: '', with: '', out: '', waste: '', observations: '' };
 }
 
 export function FlowTable({ flowSteps, onChange }: FlowTableProps) {
@@ -27,7 +27,7 @@ export function FlowTable({ flowSteps, onChange }: FlowTableProps) {
     <div>
       <div
         className="hidden desktop:grid gap-[7px] text-[10px] font-extrabold text-[var(--mut)] my-2"
-        style={{ gridTemplateColumns: '34px 1.15fr 1fr 1fr 1fr 0.85fr 34px' }}
+        style={{ gridTemplateColumns: '34px 1.15fr 1fr 1fr 1fr 0.85fr 1.15fr 34px' }}
       >
         <span></span>
         <span>Qué hizo</span>
@@ -35,13 +35,14 @@ export function FlowTable({ flowSteps, onChange }: FlowTableProps) {
         <span>Con quién</span>
         <span>Salida / decisión</span>
         <span>Tipo</span>
+        <span>Observaciones</span>
         <span></span>
       </div>
 
       {flowSteps.map((f, i) => (
         <div
           key={i}
-          className="grid grid-cols-[34px_1fr] desktop:grid-cols-[34px_1.15fr_1fr_1fr_1fr_0.85fr_34px] gap-[7px] items-start desktop:items-center my-2 pb-3 desktop:pb-0 border-b desktop:border-b-0 border-[var(--line)]"
+          className="grid grid-cols-[34px_1fr] desktop:grid-cols-[34px_1.15fr_1fr_1fr_1fr_0.85fr_1.15fr_34px] gap-[7px] items-start desktop:items-center my-2 pb-3 desktop:pb-0 border-b desktop:border-b-0 border-[var(--line)]"
         >
           <span className="w-[30px] h-[30px] rounded-full grid place-items-center bg-[var(--sky)] text-[var(--blue)] font-extrabold">
             {i + 1}
@@ -82,6 +83,12 @@ export function FlowTable({ flowSteps, onChange }: FlowTableProps) {
               </option>
             ))}
           </select>
+          <input
+            className="col-start-2 desktop:col-auto mb-[7px] desktop:mb-0 p-2 min-h-11 border border-[var(--line)] rounded-lg"
+            placeholder="Observaciones"
+            value={f.observations}
+            onChange={(e) => updateAt(i, { observations: e.target.value })}
+          />
           <button
             type="button"
             className="print:hidden col-start-2 desktop:col-auto justify-self-start w-11 h-11 border border-[var(--line)] rounded-lg bg-white"

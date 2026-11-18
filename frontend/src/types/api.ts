@@ -60,6 +60,7 @@ export interface FlowStep {
   with: string;
   out: string;
   waste: WasteType;
+  observations: string;
 }
 
 export interface Gap {
