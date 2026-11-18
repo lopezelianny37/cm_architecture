@@ -1,3 +1,5 @@
+import { API_BASE_URL } from './apiClient';
+
 export interface PriorityEntry {
   motivator: string;
   priorityOrder: number;
@@ -40,12 +42,13 @@ export function isDuplicateResult(result: SubmitResult): result is SubmitDuplica
 
 /**
  * Plain fetch, not the authenticated apiClient — this is a public,
- * login-free endpoint with no Authorization header to attach. Relies on
- * the same Vite dev-server proxy (`/api` → backend) already used
- * elsewhere, so no base URL config is needed here either.
+ * login-free endpoint with no Authorization header to attach. Still needs
+ * API_BASE_URL: in production the public wizard is served as part of the
+ * same static frontend build but the backend lives on a different origin,
+ * so a bare relative path would hit the frontend's own origin instead.
  */
 export async function submitMotivators(payload: SubmitMotivatorsPayload): Promise<SubmitResult> {
-  const response = await fetch('/api/public/moving-motivators', {
+  const response = await fetch(`${API_BASE_URL}/api/public/moving-motivators`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

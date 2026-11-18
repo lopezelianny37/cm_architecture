@@ -1,0 +1,42 @@
+services:
+  - name: gemba-backend
+    type: web
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # Set these in the Render dashboard after the first deploy — a
+      # production Supabase project's URL/keys, and this service's own
+      # frontend's deployed origin (for the CORS allowlist in main.ts).
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+  - name: gemba-frontend
+    type: web
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      # Baked in at build time (Vite) — the deployed backend's own origin,
+      # e.g. https://gemba-backend.onrender.com. Empty only works in local
+      # dev, where Vite's proxy stands in for this (see vite.config.ts).
+      - key: VITE_API_BASE_URL
+        sync: false
+    routes:
+      # Single-page app: every path (including the public /motivadores
+      # wizard) must fall back to index.html — there's no server-side
+      # router once this is a static file host.
+      - type: rewrite
+        source: /*
+        destination: /index.html

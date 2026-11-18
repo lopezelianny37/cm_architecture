@@ -1,6 +1,10 @@
 const TOKEN_KEY = 'gemba_access_token';
 const REFRESH_TOKEN_KEY = 'gemba_refresh_token';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+// Empty in dev (Vite's proxy forwards /api, /auth, /health to the backend —
+// see vite.config.ts). Must be set to the deployed backend's origin in
+// production, where frontend and backend are separate origins with no
+// proxy tying them together.
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
 export const AUTH_EXPIRED_EVENT = 'gemba:auth-expired';
 
