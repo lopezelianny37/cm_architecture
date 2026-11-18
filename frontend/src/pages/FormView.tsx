@@ -262,7 +262,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
             </span>
             <h2 className="text-[19px] m-0 mb-2">Observar el trabajo real</h2>
             <p className="text-[var(--mut)] mb-3">
-              Registra hechos, decisiones y artefactos. "No observado" significa que no apareció
+              Registra hechos, decisiones y artefactos. "N/A" significa que no apareció
               en esta situación, no que la persona no tenga la capacidad.
             </p>
             <BehaviorObservations behaviors={currentBehaviors} onChange={setBehaviors} />
