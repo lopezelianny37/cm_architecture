@@ -2,11 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 
 interface ScopeTrackerProps {
   targetScope: number;
-  currentCount: number;
+  /**
+   * Sum, across all records, of each record's completion fraction (0, 1/3,
+   * 2/3, or 1 across Preparar/Gemba baseline/Diagnóstico — see
+   * DashboardService.getScopeProgress). Gradual, not a plain record count.
+   */
+  completionSum: number;
   onTargetChange: (newTarget: number) => void;
 }
 
-export function ScopeTracker({ targetScope, currentCount, onTargetChange }: ScopeTrackerProps) {
+export function ScopeTracker({ targetScope, completionSum, onTargetChange }: ScopeTrackerProps) {
   const [localValue, setLocalValue] = useState(targetScope);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -14,7 +19,7 @@ export function ScopeTracker({ targetScope, currentCount, onTargetChange }: Scop
     setLocalValue(targetScope);
   }, [targetScope]);
 
-  const pct = Math.min(100, Math.round((currentCount / Math.max(1, localValue)) * 100));
+  const pct = Math.min(100, Math.round((completionSum / Math.max(1, localValue)) * 100));
 
   function handleChange(value: number) {
     const safeValue = Math.max(1, value || 1);

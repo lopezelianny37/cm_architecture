@@ -27,6 +27,10 @@ export interface DashboardRadarsResponse {
   motivatorValues: number[];
 }
 
+export interface ScopeProgressResponse {
+  completionSum: number;
+}
+
 export interface MotivatorsSummaryResponse {
   sampleSize: number;
   radar: Array<{ motivator: string; avgImpact: number }>;

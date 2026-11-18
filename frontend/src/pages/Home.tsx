@@ -26,7 +26,7 @@ export function Home({ onOpenRecord }: HomeProps) {
     setStatus,
     records,
     macrodomainOptions,
-    totalRecordsInScope,
+    completionSum,
     metrics,
     radars,
     motivatorsSummary,
@@ -66,7 +66,7 @@ export function Home({ onOpenRecord }: HomeProps) {
           <h3 className="text-[15px] m-0 mb-2">Avance del ciclo</h3>
           <ScopeTracker
             targetScope={settings.targetScope}
-            currentCount={totalRecordsInScope}
+            completionSum={completionSum}
             onTargetChange={updateTargetScope}
           />
           <p className="text-[var(--mut)] mt-2">

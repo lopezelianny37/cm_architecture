@@ -205,3 +205,135 @@ describe('DashboardService.getMotivatorsSummary', () => {
     expect(eqMock).not.toHaveBeenCalled();
   });
 });
+
+describe('DashboardService.getScopeProgress', () => {
+  function makeScopeProgressService(records: any[], submittedEmails: string[] = []) {
+    const userFromMock = jest.fn().mockReturnValue(
+      buildQueryMock({ data: records, error: null }),
+    );
+    const userClient = { from: userFromMock };
+
+    const submissionsQuery: any = { select: jest.fn().mockReturnThis() };
+    submissionsQuery.then = (resolve: any) =>
+      resolve({ data: submittedEmails.map((email) => ({ email })), error: null });
+    const serviceFromMock = jest.fn().mockReturnValue(submissionsQuery);
+    const serviceClient = { from: serviceFromMock };
+
+    const db = {
+      getUserClient: jest.fn().mockReturnValue(userClient),
+      getServiceRoleClient: jest.fn().mockReturnValue(serviceClient),
+    } as unknown as DatabaseService;
+
+    return { service: new DashboardService(db) };
+  }
+
+  function record(overrides: Record<string, unknown> = {}) {
+    return {
+      prep_value: '',
+      prep_barrier: '',
+      architect_email: null,
+      behaviors: [],
+      flow_steps: [],
+      gaps: [],
+      ...overrides,
+    };
+  }
+
+  it('a record with none of the 3 phases complete contributes 0', async () => {
+    const { service } = makeScopeProgressService([record()]);
+    const result = await service.getScopeProgress('token');
+    expect(result.completionSum).toBe(0);
+  });
+
+  it('a record with exactly 1 phase complete (Gemba baseline) contributes 1/3', async () => {
+    const r = record({
+      behaviors: [{ state: 'si' }],
+      flow_steps: [{ objective: 'x' }],
+      // no gaps -> Diagnóstico not complete; no prep/email -> Preparar not complete
+    });
+    const { service } = makeScopeProgressService([r]);
+    const result = await service.getScopeProgress('token');
+    expect(result.completionSum).toBeCloseTo(1 / 3);
+  });
+
+  it('a record with exactly 2 phases complete (Gemba baseline + Diagnóstico) contributes 2/3', async () => {
+    const r = record({
+      behaviors: [{ state: 'si' }],
+      flow_steps: [{ objective: 'x' }],
+      gaps: [{ text: 'brecha' }],
+    });
+    const { service } = makeScopeProgressService([r]);
+    const result = await service.getScopeProgress('token');
+    expect(result.completionSum).toBeCloseTo(2 / 3);
+  });
+
+  it('a record with all 3 phases complete contributes 1', async () => {
+    const r = record({
+      prep_value: 'Vale la pena si...',
+      prep_barrier: 'Me podría dificultar...',
+      architect_email: 'arch@test.com',
+      behaviors: [{ state: 'si' }],
+      flow_steps: [{ objective: 'x' }],
+      gaps: [{ text: 'brecha' }],
+    });
+    const { service } = makeScopeProgressService([r], ['arch@test.com']);
+    const result = await service.getScopeProgress('token');
+    expect(result.completionSum).toBe(1);
+  });
+
+  it('Preparar is NOT complete if prep text is filled but no motivator result was submitted yet', async () => {
+    const r = record({
+      prep_value: 'Vale la pena si...',
+      prep_barrier: 'Me podría dificultar...',
+      architect_email: 'nobody@test.com',
+    });
+    const { service } = makeScopeProgressService([r], ['someone-else@test.com']);
+    const result = await service.getScopeProgress('token');
+    expect(result.completionSum).toBe(0);
+  });
+
+  it('matches the motivator-result email case-insensitively and trims whitespace', async () => {
+    const r = record({
+      prep_value: 'Vale la pena si...',
+      prep_barrier: 'Me podría dificultar...',
+      architect_email: '  Arch@Test.com  ',
+      behaviors: [{ state: 'si' }],
+      flow_steps: [{ objective: 'x' }],
+      gaps: [{ text: 'brecha' }],
+    });
+    const { service } = makeScopeProgressService([r], ['arch@test.com']);
+    const result = await service.getScopeProgress('token');
+    expect(result.completionSum).toBe(1);
+  });
+
+  it('sums the fractions of several records at different completion levels', async () => {
+    const zero = record();
+    const oneThird = record({ behaviors: [{ state: 'si' }], flow_steps: [{ objective: 'x' }] });
+    const twoThirds = record({
+      behaviors: [{ state: 'si' }],
+      flow_steps: [{ objective: 'x' }],
+      gaps: [{ text: 'brecha' }],
+    });
+    const full = record({
+      prep_value: 'Vale la pena si...',
+      prep_barrier: 'Me podría dificultar...',
+      architect_email: 'arch@test.com',
+      behaviors: [{ state: 'si' }],
+      flow_steps: [{ objective: 'x' }],
+      gaps: [{ text: 'brecha' }],
+    });
+
+    const { service } = makeScopeProgressService(
+      [zero, oneThird, twoThirds, full],
+      ['arch@test.com'],
+    );
+    const result = await service.getScopeProgress('token');
+    expect(result.completionSum).toBeCloseTo(0 + 1 / 3 + 2 / 3 + 1);
+  });
+
+  it('returns 0 when the user has no records', async () => {
+    const { service } = makeScopeProgressService([]);
+    const result = await service.getScopeProgress('token');
+    expect(result.completionSum).toBe(0);
+  });
+});

@@ -5,6 +5,7 @@ import { isRecordComplete, GapEntry, FlowStep } from '@/common/utils/gemba-compl
 import { DashboardMetricsResponse } from './dto/dashboard-metrics.dto';
 import { DashboardRadarsResponse } from './dto/dashboard-radars.dto';
 import { MotivatorsSummaryResponse } from './dto/motivators-summary.dto';
+import { ScopeProgressResponse } from './dto/scope-progress.dto';
 
 interface BehaviorRow {
   state: 'si' | 'par' | 'no' | 'na';
@@ -25,6 +26,15 @@ interface MetricsRow {
 interface RadarRow {
   behaviors?: BehaviorRow[] | null;
   gemba_moving_motivators?: MotivatorRow[] | null;
+}
+
+interface ScopeProgressRow {
+  prep_value?: string | null;
+  prep_barrier?: string | null;
+  architect_email?: string | null;
+  behaviors?: BehaviorRow[] | null;
+  flow_steps?: FlowStep[] | null;
+  gaps?: GapEntry[] | null;
 }
 
 @Injectable()
@@ -184,5 +194,59 @@ export class DashboardService {
     }).sort((a, b) => a.avgPriorityOrder - b.avgPriorityOrder);
 
     return { sampleSize, radar, bars };
+  }
+
+  /**
+   * "Avance del ciclo" numerator: sum, across ALL of the user's records
+   * (never macrodomain/status-filtered — the scope target tracks the whole
+   * pilot, not the current Home filter), of each record's completion
+   * fraction across 3 equally-weighted phases:
+   *   1. Preparar: prep_value + prep_barrier filled in AND the architect's
+   *      own Moving Motivators self-assessment has been submitted (same
+   *      email-match as RecordsService.getMotivatorResult).
+   *   2. Gemba baseline: >=1 observed behavior AND >=1 flow step with an
+   *      objective/out filled in.
+   *   3. Diagnóstico: isRecordComplete() (adds the >=1 gap requirement).
+   */
+  async getScopeProgress(accessToken: string): Promise<ScopeProgressResponse> {
+    const userClient = this.db.getUserClient(accessToken);
+    const { data, error } = await userClient
+      .from('gemba_records')
+      .select('prep_value, prep_barrier, architect_email, behaviors, flow_steps, gaps');
+
+    if (error) throw new Error(error.message);
+    const records = (data ?? []) as ScopeProgressRow[];
+
+    const serviceClient = this.db.getServiceRoleClient();
+    const { data: submissions, error: subError } = await serviceClient
+      .from('moving_motivator_submissions')
+      .select('email');
+
+    if (subError) throw new Error(subError.message);
+    const submittedEmails = new Set(
+      ((submissions ?? []) as Array<{ email: string }>).map((s) => s.email.trim().toLowerCase()),
+    );
+
+    const completionSum = records.reduce((sum, record) => {
+      const hasObservedBehavior = (record.behaviors ?? []).some((b) => b.state !== 'na');
+      const hasFlowStep = (record.flow_steps ?? []).some(
+        (f) => Boolean(f.objective) || Boolean(f.out),
+      );
+      const hasMotivatorResult =
+        !!record.architect_email &&
+        submittedEmails.has(record.architect_email.trim().toLowerCase());
+
+      const prepComplete =
+        Boolean((record.prep_value ?? '').trim()) &&
+        Boolean((record.prep_barrier ?? '').trim()) &&
+        hasMotivatorResult;
+      const gembaComplete = hasObservedBehavior && hasFlowStep;
+      const diagComplete = isRecordComplete(record);
+
+      const completedPhases = [prepComplete, gembaComplete, diagComplete].filter(Boolean).length;
+      return sum + completedPhases / 3;
+    }, 0);
+
+    return { completionSum };
   }
 }

@@ -23,4 +23,9 @@ export class DashboardController {
   getMotivatorsSummary(@Query() query: QueryDashboardDto) {
     return this.dashboardService.getMotivatorsSummary(query.macrodomain);
   }
+
+  @Get('scope-progress')
+  getScopeProgress(@AccessToken() token: string) {
+    return this.dashboardService.getScopeProgress(token);
+  }
 }

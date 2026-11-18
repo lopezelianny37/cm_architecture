@@ -6,6 +6,7 @@ import type {
   MotivatorsSummaryResponse,
   RecordsListResponse,
   RecordRow,
+  ScopeProgressResponse,
   SettingsResponse,
   StatusFilter,
 } from '../types/api';
@@ -21,7 +22,7 @@ export function useDashboardData() {
   const [status, setStatus] = useState<StatusFilter>('all');
   const [records, setRecords] = useState<RecordRow[]>([]);
   const [macrodomainOptions, setMacrodomainOptions] = useState<string[]>([]);
-  const [totalRecordsInScope, setTotalRecordsInScope] = useState(0);
+  const [completionSum, setCompletionSum] = useState(0);
   const [metrics, setMetrics] = useState<DashboardMetricsResponse | null>(null);
   const [radars, setRadars] = useState<DashboardRadarsResponse | null>(null);
   const [motivatorsSummary, setMotivatorsSummary] = useState<MotivatorsSummaryResponse | null>(
@@ -33,7 +34,9 @@ export function useDashboardData() {
 
   const refetch = useCallback(() => setRefetchIndex((i) => i + 1), []);
 
-  // Macrodomain options: derived from the full unfiltered record set.
+  // Macrodomain options + scope progress: derived from the full unfiltered
+  // record set — never affected by the Home page's macrodomain/status
+  // filter, since the scope target tracks the whole pilot.
   useEffect(() => {
     apiClient
       .get<RecordsListResponse>('/api/records?limit=200')
@@ -46,9 +49,13 @@ export function useDashboardData() {
           ),
         ).sort();
         setMacrodomainOptions(unique);
-        setTotalRecordsInScope(res.total);
       })
       .catch(() => setMacrodomainOptions([]));
+
+    apiClient
+      .get<ScopeProgressResponse>('/api/dashboard/scope-progress')
+      .then((res) => setCompletionSum(res.completionSum))
+      .catch(() => setCompletionSum(0));
   }, [refetchIndex]);
 
   // Filtered records + metrics + radars.
@@ -105,7 +112,7 @@ export function useDashboardData() {
     setStatus,
     records,
     macrodomainOptions,
-    totalRecordsInScope,
+    completionSum,
     metrics,
     radars,
     motivatorsSummary,

@@ -39,6 +39,7 @@ function mockApiGet(summary: ReturnType<typeof summaryWithSample> | ReturnType<t
     if (path.includes('/api/dashboard/motivators-summary')) return Promise.resolve(summary);
     if (path.includes('/api/dashboard/metrics')) return Promise.resolve(EMPTY_METRICS);
     if (path.includes('/api/dashboard/radars')) return Promise.resolve(EMPTY_RADARS);
+    if (path.includes('/api/dashboard/scope-progress')) return Promise.resolve({ completionSum: 0 });
     if (path.includes('/api/settings')) return Promise.resolve({ targetScope: 5 });
     if (path.includes('/api/records')) return Promise.resolve({ records: [], total: 0, hasMore: false });
     return Promise.reject(new Error(`unexpected path: ${path}`));
@@ -94,6 +95,7 @@ describe('Home — Moving Motivators del equipo', () => {
       if (path.includes('/api/dashboard/motivators-summary')) return Promise.resolve(summaryWithSample());
       if (path.includes('/api/dashboard/metrics')) return Promise.resolve(EMPTY_METRICS);
       if (path.includes('/api/dashboard/radars')) return Promise.resolve(EMPTY_RADARS);
+      if (path.includes('/api/dashboard/scope-progress')) return Promise.resolve({ completionSum: 0 });
       if (path.includes('/api/settings')) return Promise.resolve({ targetScope: 5 });
       if (path === '/api/records?limit=200')
         return Promise.resolve({ records: [], total: 0, hasMore: false });
