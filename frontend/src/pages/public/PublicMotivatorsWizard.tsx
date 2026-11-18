@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { StepIdentificacion, type IdentificacionData } from '../../components/public-motivators/StepIdentificacion';
 import { StepOrdenar } from '../../components/public-motivators/StepOrdenar';
+import { StepImpacto } from '../../components/public-motivators/StepImpacto';
+import { DuplicateConfirmModal } from '../../components/public-motivators/DuplicateConfirmModal';
+import { ConfirmationScreen } from '../../components/public-motivators/ConfirmationScreen';
 import { MOT_NAMES } from '../../constants/gemba.constants';
+import { computePriorityOrder } from '../../lib/priorityOrder';
+import {
+  isDuplicateResult,
+  submitMotivators,
+  type ExistingSubmission,
+} from '../../lib/publicMotivatorsApi';
 
 type WizardStep = 0 | 1 | 2;
 
@@ -16,6 +25,51 @@ export function PublicMotivatorsWizard() {
   // pre-ranked) rather than a shuffle — both are allowed per the addendum,
   // a fixed order keeps the wizard deterministic and testable.
   const [order, setOrder] = useState<string[]>(MOT_NAMES);
+  const [impacts, setImpacts] = useState<Record<string, number>>({});
+
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [duplicate, setDuplicate] = useState<ExistingSubmission | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  async function handleSubmit(confirmReplace: boolean) {
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const result = await submitMotivators({
+        name: identificacion.name.trim(),
+        email: identificacion.email.trim(),
+        macrodomain: identificacion.macrodomain,
+        priorities: computePriorityOrder(order),
+        impacts: MOT_NAMES.map((name) => ({ motivator: name, impact: impacts[name] ?? 0 })),
+        confirmReplace,
+      });
+
+      if (isDuplicateResult(result)) {
+        setDuplicate(result.existing);
+      } else {
+        setDuplicate(null);
+        setSubmitted(true);
+      }
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : 'No se pudo enviar la información. Intentá de nuevo.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-[var(--bg)]">
+        <div className="max-w-[640px] mx-auto p-5">
+          <ConfirmationScreen />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
@@ -46,17 +100,24 @@ export function PublicMotivatorsWizard() {
           />
         )}
 
-        {step >= 2 && (
-          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
-            <p className="text-[var(--mut)]">Paso {step} — próximamente.</p>
-            <button
-              type="button"
-              className="border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white mt-2"
-              onClick={() => setStep(1)}
-            >
-              Volver
-            </button>
-          </div>
+        {step === 2 && (
+          <StepImpacto
+            impacts={impacts}
+            onChange={setImpacts}
+            onBack={() => setStep(1)}
+            onSubmit={() => handleSubmit(false)}
+            submitting={submitting}
+            error={submitError}
+          />
+        )}
+
+        {duplicate && (
+          <DuplicateConfirmModal
+            existing={duplicate}
+            loading={submitting}
+            onReplace={() => handleSubmit(true)}
+            onCancel={() => setDuplicate(null)}
+          />
         )}
       </div>
     </div>
