@@ -44,3 +44,7 @@ docker-compose.override.yml
 coverage/
 .nyc_output/
 junit.xml
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
