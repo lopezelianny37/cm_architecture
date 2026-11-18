@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRecordForm } from '../hooks/useRecordForm';
 import { useAutoSave } from '../hooks/useAutoSave';
 import { AutoSaveField } from '../components/form/AutoSaveField';
-import { MotivatorList } from '../components/form/MotivatorList';
+import { MotivatorResultView } from '../components/form/MotivatorResultView';
 import { BehaviorObservations } from '../components/form/BehaviorObservations';
 import { FlowTable } from '../components/form/FlowTable';
 import { DebriefSection } from '../components/form/DebriefSection';
@@ -33,8 +33,7 @@ function defaultConditions(): ConditionEntry[] {
 }
 
 export function FormView({ recordId, onBack }: FormViewProps) {
-  const { record, motivators, setMotivators, loading, updateField, saveMotivators, toast } =
-    useRecordForm(recordId);
+  const { record, loading, updateField, toast } = useRecordForm(recordId);
 
   const [activeTab, setActiveTab] = useState<TabId>('prep');
   const [behaviors, setBehaviors] = useState<BehaviorObservation[] | null>(null);
@@ -45,7 +44,6 @@ export function FormView({ recordId, onBack }: FormViewProps) {
 
   const dataReady = !loading && record !== null;
 
-  useAutoSave(motivators, saveMotivators, { enabled: dataReady });
   useAutoSave(
     behaviors,
     (v) => {
@@ -151,6 +149,12 @@ export function FormView({ recordId, onBack }: FormViewProps) {
             placeholder="Nombre / rol"
             onSave={(v) => updateField({ businessReferent: v })}
           />
+          <AutoSaveField
+            label="Correo del arquitecto"
+            initialValue={record.architect_email ?? ''}
+            placeholder="arquitecto@empresa.com"
+            onSave={(v) => updateField({ architectEmail: v })}
+          />
         </div>
         <div className="flex justify-between items-center gap-[9px] mt-3 flex-wrap">
           <span className="text-[11px] text-[var(--green)]">✓ Guardado automático</span>
@@ -245,11 +249,11 @@ export function FormView({ recordId, onBack }: FormViewProps) {
           <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <h2 className="text-[19px] m-0 mb-2">Moving Motivators</h2>
             <p className="text-[var(--mut)] mb-3">
-              Ordena las tarjetas de arriba a abajo, desde la menos importante hasta la más
-              importante. Luego mueve la barra hacia la derecha si el cambio fortalece el
-              motivador y hacia la izquierda si lo debilita.
+              Autoevaluación del propio arquitecto, completada de forma independiente a través
+              de un enlace. Completa el correo del arquitecto arriba para vincular su resultado
+              a este registro.
             </p>
-            <MotivatorList motivators={motivators} onChange={setMotivators} />
+            <MotivatorResultView recordId={recordId} toast={toast} />
           </div>
         </>
       )}

@@ -11,6 +11,7 @@ const UPDATE_FIELD_MAP: Record<keyof UpdateRecordDto, string> = {
   macrodomain: 'macrodomain',
   initiativeName: 'initiative_name',
   businessReferent: 'business_referent',
+  architectEmail: 'architect_email',
   prepValue: 'prep_value',
   prepBarrier: 'prep_barrier',
   behaviors: 'behaviors',

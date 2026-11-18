@@ -20,6 +20,7 @@ function applyPatchToRecord(record: RecordDetail, patch: UpdateRecordPayload): R
   if (patch.macrodomain !== undefined) next.macrodomain = patch.macrodomain;
   if (patch.initiativeName !== undefined) next.initiative_name = patch.initiativeName;
   if (patch.businessReferent !== undefined) next.business_referent = patch.businessReferent;
+  if (patch.architectEmail !== undefined) next.architect_email = patch.architectEmail;
   if (patch.prepValue !== undefined) next.prep_value = patch.prepValue;
   if (patch.prepBarrier !== undefined) next.prep_barrier = patch.prepBarrier;
   if (patch.behaviors !== undefined) next.behaviors = patch.behaviors;

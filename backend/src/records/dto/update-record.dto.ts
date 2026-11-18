@@ -2,6 +2,7 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsEmail,
   IsInt,
   IsOptional,
   IsString,
@@ -32,6 +33,18 @@ export class UpdateRecordDto {
   @IsOptional()
   @IsString()
   businessReferent?: string;
+
+  /**
+   * Join key to moving_motivator_submissions (see
+   * SPEC_MOVING_MOTIVATORS_ADDENDUM.md §3.2) — the facilitator enters the
+   * architect's own email here so the public wizard's submission can be
+   * matched back to this record. Empty string allowed (not yet filled in);
+   * anything non-empty must be a valid email format.
+   */
+  @IsOptional()
+  @ValidateIf((o) => o.architectEmail !== '')
+  @IsEmail()
+  architectEmail?: string;
 
   @IsOptional()
   @IsString()

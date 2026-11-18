@@ -19,6 +19,7 @@ function buildRecord(overrides: Partial<RecordDetail> = {}): RecordDetail {
     macrodomain: null,
     initiative_name: null,
     business_referent: null,
+    architect_email: null,
     prep_value: '',
     prep_barrier: '',
     behaviors: null,

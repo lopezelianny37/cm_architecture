@@ -71,6 +71,7 @@ export interface RecordDetail {
   macrodomain: string | null;
   initiative_name: string | null;
   business_referent: string | null;
+  architect_email: string | null;
   prep_value: string | null;
   prep_barrier: string | null;
   behaviors: BehaviorObservation[] | null;
@@ -92,6 +93,7 @@ export interface UpdateRecordPayload {
   macrodomain?: string;
   initiativeName?: string;
   businessReferent?: string;
+  architectEmail?: string;
   prepValue?: string;
   prepBarrier?: string;
   behaviors?: BehaviorObservation[];
@@ -113,3 +115,26 @@ export interface MotivatorItem {
   order: number;
   impact: number;
 }
+
+export interface MotivatorPriorityEntry {
+  motivator: string;
+  priorityOrder: number;
+}
+
+export interface MotivatorImpactEntry {
+  motivator: string;
+  impact: number;
+}
+
+export interface MotivatorResultData {
+  name: string;
+  email: string;
+  macrodomain: string;
+  submittedAt: string;
+  priorities: MotivatorPriorityEntry[];
+  impacts: MotivatorImpactEntry[];
+}
+
+export type MotivatorResultResponse =
+  | { found: false }
+  | { found: true; result: MotivatorResultData };

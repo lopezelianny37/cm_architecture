@@ -27,3 +27,23 @@ describe('UpdateRecordDto.csatScore', () => {
     expect(errors.length).toBeGreaterThan(0);
   });
 });
+
+describe('UpdateRecordDto.architectEmail', () => {
+  it('accepts a valid email', async () => {
+    const dto = plainToInstance(UpdateRecordDto, { architectEmail: 'ana@example.com' });
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('accepts an empty string (not yet filled in)', async () => {
+    const dto = plainToInstance(UpdateRecordDto, { architectEmail: '' });
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('rejects a malformed email', async () => {
+    const dto = plainToInstance(UpdateRecordDto, { architectEmail: 'not-an-email' });
+    const errors = await validate(dto);
+    expect(errors.some((e) => e.property === 'architectEmail')).toBe(true);
+  });
+});
