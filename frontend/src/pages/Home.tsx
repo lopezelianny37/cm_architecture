@@ -11,7 +11,6 @@ import { RadarChart } from '../components/charts/RadarChart';
 import { PriorityBarChart } from '../components/charts/PriorityBarChart';
 import { Toast } from '../components/Toast';
 import { BEH_SHORT_LABELS, MOT_NAMES, PUBLIC_MACRODOMAINS } from '../constants/gemba.constants';
-import { gapValueToRadius } from '../lib/radarVisualization';
 import { impactToRadius } from '../lib/impactToRadius';
 
 interface HomeProps {
@@ -121,13 +120,16 @@ export function Home({ onOpenRecord }: HomeProps) {
       />
 
       <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
-        <h2 className="text-[19px] m-0 mb-2">Radar de brechas del equipo</h2>
-        <p className="text-[var(--mut)]">Ejes más cerca del centro indican mayor brecha.</p>
+        <h2 className="text-[19px] m-0 mb-2">Radar de observaciones</h2>
+        <p className="text-[var(--mut)]">
+          El centro indica que el comportamiento no aplicó; se aleja del centro según fue no
+          observado, parcial u observado.
+        </p>
         <RadarChart
           labels={BEH_SHORT_LABELS}
-          values={(radars?.gapValues ?? new Array(8).fill(0)).map(gapValueToRadius)}
+          values={radars?.observationValues ?? new Array(7).fill(0)}
           color="#d71920"
-          ariaLabel="Radar de brechas"
+          ariaLabel="Radar de observaciones"
           strokeWidth={2.5}
           fillOpacity={0.28}
         />

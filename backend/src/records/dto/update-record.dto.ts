@@ -11,7 +11,7 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { BehaviorObservationDto } from './behavior-observation.dto';
 import { FlowStepDto } from './flow-step.dto';
 import { GapDto } from './gap.dto';
@@ -62,10 +62,18 @@ export class UpdateRecordDto {
   @IsString()
   prepBarrier?: string;
 
+  /**
+   * A behaviors array from a legacy export (back when BEH had 8 items) is
+   * silently truncated to the current 7 instead of being rejected — no
+   * real data has this shape anymore (BEH was reduced before any record
+   * existed with the old shape), but this keeps a future stray import
+   * tolerant rather than crashing.
+   */
   @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value.slice(0, 7) : value))
   @IsArray()
-  @ArrayMinSize(8)
-  @ArrayMaxSize(8)
+  @ArrayMinSize(7)
+  @ArrayMaxSize(7)
   @ValidateNested({ each: true })
   @Type(() => BehaviorObservationDto)
   behaviors?: BehaviorObservationDto[];

@@ -24,7 +24,7 @@ export interface DashboardMetricsResponse {
 }
 
 export interface DashboardRadarsResponse {
-  gapValues: number[];
+  observationValues: number[];
   motivatorValues: number[];
 }
 

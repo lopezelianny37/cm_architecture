@@ -47,11 +47,6 @@ export const BEH: BehaviorDef[] = [
     name: 'Hace visible la contribución',
     description: 'Explica qué decisión, resultado o valor habilitó Arquitectura.',
   },
-  {
-    name: 'Cocrea y orienta decisiones a valor',
-    description:
-      'Integra a Negocio en la exploración, valida entendimiento y acompaña decisiones basadas en evidencia y valor.',
-  },
 ];
 
 export const MOT: MotivatorDef[] = [

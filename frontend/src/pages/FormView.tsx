@@ -12,8 +12,7 @@ import { ConditionsChecklist } from '../components/form/ConditionsChecklist';
 import { RadarChart } from '../components/charts/RadarChart';
 import { Toast } from '../components/Toast';
 import { exportOneRecord } from '../lib/exportImport';
-import { computeIndividualGapRadar } from '../lib/individualRadar';
-import { gapValueToRadius } from '../lib/radarVisualization';
+import { computeIndividualObservationRadar } from '../lib/individualRadar';
 import { BEH_SHORT_LABELS, PUBLIC_MACRODOMAINS } from '../constants/gemba.constants';
 import type { BehaviorObservation, ConditionEntry, FlowStep, Gap } from '../types/api';
 
@@ -25,7 +24,7 @@ interface FormViewProps {
 type TabId = 'prep' | 'gemba' | 'diag';
 
 function defaultBehaviors(): BehaviorObservation[] {
-  return Array.from({ length: 8 }, () => ({ state: 'na', fact: '', artifact: '' }));
+  return Array.from({ length: 7 }, () => ({ state: 'na', fact: '', artifact: '' }));
 }
 
 function defaultConditions(): ConditionEntry[] {
@@ -307,16 +306,16 @@ export function FormView({ recordId, onBack }: FormViewProps) {
       {activeTab === 'diag' && diagReady && (
         <>
           <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
-            <h2 className="text-[19px] m-0 mb-2">Radar de brechas individual</h2>
+            <h2 className="text-[19px] m-0 mb-2">Radar de observaciones individual</h2>
             <p className="text-[var(--mut)]">
-              Tu perfil de observación en este ciclo. Ejes más cerca del centro indican mayor
-              brecha.
+              Tu perfil de observación en este ciclo. El centro indica que el comportamiento no
+              aplicó; se aleja del centro según fue no observado, parcial u observado.
             </p>
             <RadarChart
               labels={BEH_SHORT_LABELS}
-              values={computeIndividualGapRadar(currentBehaviors).map(gapValueToRadius)}
+              values={computeIndividualObservationRadar(currentBehaviors)}
               color="#d71920"
-              ariaLabel="Radar de brechas individual"
+              ariaLabel="Radar de observaciones individual"
               strokeWidth={2.5}
               fillOpacity={0.28}
             />

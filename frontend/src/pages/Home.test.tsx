@@ -20,7 +20,7 @@ const EMPTY_METRICS = {
   gapsByType: {},
 };
 
-const EMPTY_RADARS = { gapValues: new Array(8).fill(0), motivatorValues: new Array(10).fill(0) };
+const EMPTY_RADARS = { observationValues: new Array(7).fill(0), motivatorValues: new Array(10).fill(0) };
 
 function summaryWithSample() {
   return {
@@ -45,6 +45,26 @@ function mockApiGet(summary: ReturnType<typeof summaryWithSample> | ReturnType<t
     return Promise.reject(new Error(`unexpected path: ${path}`));
   });
 }
+
+describe('Home — Radar de observaciones', () => {
+  beforeEach(() => {
+    vi.mocked(apiClient.get).mockReset();
+  });
+
+  it('renders the renamed title, description, and aria-label (not "brechas")', async () => {
+    mockApiGet(emptySummary());
+    render(<Home onOpenRecord={() => {}} />);
+
+    await waitFor(() => screen.getByText('Radar de observaciones'));
+    expect(
+      screen.getByText(/El centro indica que el comportamiento no aplicó/),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Radar de observaciones')).toBeInTheDocument();
+    // The old title is gone — note "Brechas identificadas" (a different,
+    // unrelated section further down the page) legitimately still exists.
+    expect(screen.queryByText('Radar de brechas del equipo')).not.toBeInTheDocument();
+  });
+});
 
 describe('Home — Moving Motivators del equipo', () => {
   beforeEach(() => {

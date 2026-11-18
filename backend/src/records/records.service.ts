@@ -29,7 +29,7 @@ const UPDATE_FIELD_MAP: Record<keyof UpdateRecordDto, string> = {
 };
 
 const DEFAULT_BEHAVIORS = () =>
-  Array.from({ length: 8 }, () => ({ state: 'na', fact: '', artifact: '' }));
+  Array.from({ length: 7 }, () => ({ state: 'na', fact: '', artifact: '' }));
 
 const DEFAULT_FLOW_STEPS = () => [
   { step: 'Recibe / identifica la necesidad', objective: '', with: '', out: '', waste: '', observations: '' },

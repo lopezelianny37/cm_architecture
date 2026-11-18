@@ -93,13 +93,13 @@ describe('DashboardService.getRadars', () => {
   it('returns arrays of the correct length with zeros when no records', async () => {
     const { service } = makeService([]);
     const result = await service.getRadars('token');
-    expect(result.gapValues).toHaveLength(BEH.length);
+    expect(result.observationValues).toHaveLength(BEH.length);
     expect(result.motivatorValues).toHaveLength(MOT.length);
-    expect(result.gapValues.every((v) => v === 0)).toBe(true);
+    expect(result.observationValues.every((v: number) => v === 0)).toBe(true);
     expect(result.motivatorValues.every((v) => v === 0)).toBe(true);
   });
 
-  it('ignores na/null behavior states when averaging gapValues', async () => {
+  it('averages the ordinal level (na=0, no=1, par=2, si=3) per axis, normalized by /3', async () => {
     const records = [
       { behaviors: [{ state: 'na' }] },
       { behaviors: [{ state: 'si' }] },
@@ -107,8 +107,30 @@ describe('DashboardService.getRadars', () => {
     ];
     const { service } = makeService(records);
     const result = await service.getRadars('token');
-    // only 'si' (0) and 'no' (1) count -> avg 0.5, 'na' ignored
-    expect(result.gapValues[0]).toBe(0.5);
+    // na=0, si=3, no=1 -> avg level (0+3+1)/3 = 4/3 -> radius (4/3)/3 = 4/9
+    expect(result.observationValues[0]).toBeCloseTo(4 / 9);
+  });
+
+  it('treats a record with no state at all for an axis the same as na (level 0)', async () => {
+    const records = [{ behaviors: [{ state: 'si' }] }, { behaviors: [] }];
+    const { service } = makeService(records);
+    const result = await service.getRadars('token');
+    // si=3, missing=na=0 -> avg (3+0)/2 = 1.5 -> radius 1.5/3 = 0.5
+    expect(result.observationValues[0]).toBeCloseTo(0.5);
+  });
+
+  it('places a fully-N/A axis at the center (radius 0)', async () => {
+    const records = [{ behaviors: [{ state: 'na' }] }, { behaviors: [{ state: 'na' }] }];
+    const { service } = makeService(records);
+    const result = await service.getRadars('token');
+    expect(result.observationValues[0]).toBe(0);
+  });
+
+  it('places a fully-Observado axis at the edge (radius 1)', async () => {
+    const records = [{ behaviors: [{ state: 'si' }] }, { behaviors: [{ state: 'si' }] }];
+    const { service } = makeService(records);
+    const result = await service.getRadars('token');
+    expect(result.observationValues[0]).toBe(1);
   });
 
   it('ignores records missing a given motivator by name', async () => {

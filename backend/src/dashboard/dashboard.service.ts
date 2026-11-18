@@ -28,6 +28,8 @@ interface RadarRow {
   gemba_moving_motivators?: MotivatorRow[] | null;
 }
 
+const OBSERVATION_LEVELS: Record<string, number> = { na: 0, no: 1, par: 2, si: 3 };
+
 interface ScopeProgressRow {
   prep_value?: string | null;
   prep_barrier?: string | null;
@@ -115,15 +117,16 @@ export class DashboardService {
       'behaviors, gemba_moving_motivators(name, order)',
     );
 
-    const gapValues = BEH.map((_, i) => {
-      const values = rows
-        .map((r) => r.behaviors?.[i]?.state)
-        .filter((s): s is 'si' | 'par' | 'no' => s != null && s !== 'na')
-        .map((s) => ({ si: 0, par: 0.5, no: 1 }[s]));
-
-      return values.length > 0
-        ? values.reduce((a, b) => a + b, 0) / values.length
-        : 0;
+    // Ordinal 4-level scale, N/A included (not excluded) since it's a real
+    // observation ("didn't apply here"), not missing data: na=0 (centro),
+    // no=1, par=2, si=3 (borde). Averaged per axis across records, then
+    // normalized by /3 directly into the radius RadarChart expects — no
+    // separate inversion step needed, since the scale already increases
+    // toward the edge. Must match frontend/src/lib/individualRadar.ts.
+    const observationValues = BEH.map((_, i) => {
+      const levels = rows.map((r) => OBSERVATION_LEVELS[r.behaviors?.[i]?.state ?? 'na'] ?? 0);
+      const avgLevel = levels.length > 0 ? levels.reduce((a, b) => a + b, 0) / levels.length : 0;
+      return avgLevel / 3;
     });
 
     const motivatorValues = MOT.map((m) => {
@@ -137,7 +140,7 @@ export class DashboardService {
         : 0;
     });
 
-    return { gapValues, motivatorValues };
+    return { observationValues, motivatorValues };
   }
 
   /**

@@ -67,3 +67,36 @@ describe('UpdateRecordDto.initiativeStatus', () => {
     expect(errors.some((e) => e.property === 'initiativeStatus')).toBe(true);
   });
 });
+
+describe('UpdateRecordDto.behaviors', () => {
+  function behavior(state = 'na') {
+    return { state, fact: '', artifact: '' };
+  }
+
+  it('accepts exactly 7 behaviors', async () => {
+    const dto = plainToInstance(UpdateRecordDto, {
+      behaviors: Array.from({ length: 7 }, () => behavior()),
+    });
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('rejects fewer than 7 behaviors', async () => {
+    const dto = plainToInstance(UpdateRecordDto, {
+      behaviors: Array.from({ length: 6 }, () => behavior()),
+    });
+    const errors = await validate(dto);
+    expect(errors.some((e) => e.property === 'behaviors')).toBe(true);
+  });
+
+  it('silently truncates a legacy 8-item array to 7 instead of rejecting it', async () => {
+    const dto = plainToInstance(UpdateRecordDto, {
+      behaviors: Array.from({ length: 8 }, (_, i) => behavior(i === 7 ? 'si' : 'na')),
+    });
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(0);
+    expect(dto.behaviors).toHaveLength(7);
+    // the dropped 8th item was the only 'si' -> confirms it's really gone, not just uncounted
+    expect(dto.behaviors?.every((b) => b.state === 'na')).toBe(true);
+  });
+});
