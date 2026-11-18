@@ -8,6 +8,7 @@ import { RosterTable } from '../components/dashboard/RosterTable';
 import { BarChart } from '../components/charts/BarChart';
 import { RadarChart } from '../components/charts/RadarChart';
 import { BEH_SHORT_LABELS, MOT_NAMES } from '../constants/gemba.constants';
+import { gapValueToRadius } from '../lib/radarVisualization';
 
 interface HomeProps {
   onOpenRecord: (id: string) => void;
@@ -90,12 +91,14 @@ export function Home({ onOpenRecord }: HomeProps) {
       <div className="grid grid-cols-1 tablet:grid-cols-2 gap-[14px]">
         <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
           <h2 className="text-[19px] m-0 mb-2">Radar de brechas del equipo</h2>
-          <p className="text-[var(--mut)]">Promedio invertido: mayor valor indica mayor brecha.</p>
+          <p className="text-[var(--mut)]">Ejes más cerca del centro indican mayor brecha.</p>
           <RadarChart
             labels={BEH_SHORT_LABELS}
-            values={radars?.gapValues ?? new Array(8).fill(0)}
+            values={(radars?.gapValues ?? new Array(8).fill(0)).map(gapValueToRadius)}
             color="#d71920"
             ariaLabel="Radar de brechas"
+            strokeWidth={2.5}
+            fillOpacity={0.28}
           />
         </div>
         <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">

@@ -3,6 +3,8 @@ interface RadarChartProps {
   values: number[];
   color: string;
   ariaLabel: string;
+  strokeWidth?: number;
+  fillOpacity?: number;
 }
 
 const CX = 210;
@@ -14,7 +16,14 @@ function point(n: number, i: number, v = 1): [number, number] {
   return [CX + Math.cos(angle) * R * v, CY + Math.sin(angle) * R * v];
 }
 
-export function RadarChart({ labels, values, color, ariaLabel }: RadarChartProps) {
+export function RadarChart({
+  labels,
+  values,
+  color,
+  ariaLabel,
+  strokeWidth = 2,
+  fillOpacity = 0.2,
+}: RadarChartProps) {
   const n = labels.length;
   const gridLevels = [1, 2, 3, 4];
 
@@ -46,7 +55,7 @@ export function RadarChart({ labels, values, color, ariaLabel }: RadarChartProps
         );
       })}
 
-      <polygon points={dataPolygon} fill={color} fillOpacity={0.2} stroke={color} strokeWidth={2} />
+      <polygon points={dataPolygon} fill={color} fillOpacity={fillOpacity} stroke={color} strokeWidth={strokeWidth} />
 
       {values.map((v, i) => {
         const [x, y] = point(n, i, v);
