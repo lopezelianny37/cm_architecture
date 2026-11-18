@@ -19,7 +19,7 @@ export function RosterTable({ records, onOpen }: RosterTableProps) {
       <table className="w-full border-collapse">
         <thead>
           <tr>
-            {['Arquitecto', 'Macrodominio', 'Iniciativa', 'Baseline', 'Brechas', ''].map((h) => (
+            {['Arquitecto', 'Macrodominio', 'Iniciativa', 'Estado de la iniciativa', 'Baseline', 'Brechas', ''].map((h) => (
               <th
                 key={h}
                 className="p-[9px] border-b border-[var(--line)] text-left text-[11px] text-[var(--mut)] whitespace-nowrap"
@@ -42,6 +42,9 @@ export function RosterTable({ records, onOpen }: RosterTableProps) {
                 </td>
                 <td className="p-[9px] border-b border-[var(--line)] whitespace-nowrap">
                   {r.initiative_name || '—'}
+                </td>
+                <td className="p-[9px] border-b border-[var(--line)] whitespace-nowrap">
+                  {r.initiative_status || '—'}
                 </td>
                 <td className="p-[9px] border-b border-[var(--line)] whitespace-nowrap">
                   <span

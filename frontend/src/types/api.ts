@@ -3,6 +3,7 @@ export interface RecordRow {
   architect_name: string | null;
   macrodomain: string | null;
   initiative_name: string | null;
+  initiative_status: string | null;
   gaps: Array<{ text?: string; type?: string }> | null;
   csat_score: number | null;
   isComplete: boolean;
@@ -80,6 +81,7 @@ export interface RecordDetail {
   architect_name: string | null;
   macrodomain: string | null;
   initiative_name: string | null;
+  initiative_status: string | null;
   business_referent: string | null;
   architect_email: string | null;
   prep_value: string | null;
@@ -102,6 +104,7 @@ export interface UpdateRecordPayload {
   architectName?: string;
   macrodomain?: string;
   initiativeName?: string;
+  initiativeStatus?: string;
   businessReferent?: string;
   architectEmail?: string;
   prepValue?: string;

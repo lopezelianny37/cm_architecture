@@ -30,6 +30,14 @@ export class UpdateRecordDto {
   @IsString()
   initiativeName?: string;
 
+  /**
+   * Free text for now — no fixed options yet (explicitly requested as
+   * plain text, to be revisited later).
+   */
+  @IsOptional()
+  @IsString()
+  initiativeStatus?: string;
+
   @IsOptional()
   @IsString()
   businessReferent?: string;

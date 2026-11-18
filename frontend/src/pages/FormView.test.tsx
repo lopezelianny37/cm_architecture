@@ -18,6 +18,7 @@ function buildRecord(overrides: Partial<RecordDetail> = {}): RecordDetail {
     architect_name: 'Arquitecta de prueba',
     macrodomain: null,
     initiative_name: null,
+    initiative_status: null,
     business_referent: null,
     architect_email: null,
     prep_value: '',
@@ -108,6 +109,52 @@ describe('FormView — select de Macrodominio', () => {
 
     expect(apiClient.patch).toHaveBeenCalledWith('/api/records/r1', {
       macrodomain: 'Technology Foundation',
+    });
+    vi.useRealTimers();
+  });
+});
+
+describe('FormView — campo Estado de la iniciativa', () => {
+  beforeEach(() => {
+    vi.mocked(apiClient.get).mockReset();
+    vi.mocked(apiClient.patch).mockReset();
+    vi.mocked(apiClient.patch).mockResolvedValue({});
+  });
+
+  it('starts empty when the record has no initiative_status yet', async () => {
+    mockGet(buildRecord({ initiative_status: null }));
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() => screen.getByLabelText('Estado de la iniciativa'));
+    const field = screen.getByLabelText('Estado de la iniciativa') as HTMLInputElement;
+    expect(field.value).toBe('');
+  });
+
+  it('loads the existing value from the record', async () => {
+    mockGet(buildRecord({ initiative_status: 'En evaluación con negocio' }));
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() => screen.getByLabelText('Estado de la iniciativa'));
+    const field = screen.getByLabelText('Estado de la iniciativa') as HTMLInputElement;
+    expect(field.value).toBe('En evaluación con negocio');
+  });
+
+  it('auto-saves the typed value through updateField', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    mockGet(buildRecord({ initiative_status: null }));
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() => screen.getByLabelText('Estado de la iniciativa'));
+    fireEvent.change(screen.getByLabelText('Estado de la iniciativa'), {
+      target: { value: 'Aprobada' },
+    });
+
+    await act(async () => {
+      vi.advanceTimersByTime(600);
+    });
+
+    expect(apiClient.patch).toHaveBeenCalledWith('/api/records/r1', {
+      initiativeStatus: 'Aprobada',
     });
     vi.useRealTimers();
   });

@@ -47,3 +47,23 @@ describe('UpdateRecordDto.architectEmail', () => {
     expect(errors.some((e) => e.property === 'architectEmail')).toBe(true);
   });
 });
+
+describe('UpdateRecordDto.initiativeStatus', () => {
+  it('accepts free text, with no fixed options', async () => {
+    const dto = plainToInstance(UpdateRecordDto, { initiativeStatus: 'En evaluación' });
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('accepts an empty string', async () => {
+    const dto = plainToInstance(UpdateRecordDto, { initiativeStatus: '' });
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('rejects a non-string value', async () => {
+    const dto = plainToInstance(UpdateRecordDto, { initiativeStatus: 42 });
+    const errors = await validate(dto);
+    expect(errors.some((e) => e.property === 'initiativeStatus')).toBe(true);
+  });
+});

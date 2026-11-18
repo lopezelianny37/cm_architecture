@@ -136,7 +136,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
   return (
     <div className="max-w-[1280px] mx-auto p-5 flex flex-col gap-[14px]">
       <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
-        <div className="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-4 gap-[11px]">
+        <div className="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-[11px]">
           <AutoSaveField
             label="Arquitecto"
             initialValue={record.architect_name ?? ''}
@@ -155,6 +155,12 @@ export function FormView({ recordId, onBack }: FormViewProps) {
             initialValue={record.initiative_name ?? ''}
             placeholder="Nombre de la iniciativa"
             onSave={(v) => updateField({ initiativeName: v })}
+          />
+          <AutoSaveField
+            label="Estado de la iniciativa"
+            initialValue={record.initiative_status ?? ''}
+            placeholder="Ej.: En evaluación, Aprobada, En curso"
+            onSave={(v) => updateField({ initiativeStatus: v })}
           />
           <AutoSaveField
             label="Referente de Negocio"
