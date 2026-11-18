@@ -33,6 +33,16 @@ function defaultConditions(): ConditionEntry[] {
 
 export function FormView({ recordId, onBack }: FormViewProps) {
   const { record, loading, updateField, toast } = useRecordForm(recordId);
+  const motivatorsWizardUrl = `${window.location.origin}/motivadores`;
+
+  async function handleCopyMotivatorsLink() {
+    try {
+      await navigator.clipboard.writeText(motivatorsWizardUrl);
+      toast.show('Enlace copiado');
+    } catch {
+      toast.show('No se pudo copiar el enlace');
+    }
+  }
 
   const [activeTab, setActiveTab] = useState<TabId>('prep');
   const [behaviors, setBehaviors] = useState<BehaviorObservation[] | null>(null);
@@ -265,12 +275,26 @@ export function FormView({ recordId, onBack }: FormViewProps) {
           </div>
 
           <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
-            <h2 className="text-[19px] m-0 mb-2">Moving Motivators</h2>
-            <p className="text-[var(--mut)] mb-3">
-              Autoevaluación del propio arquitecto, completada de forma independiente a través
-              de un enlace. Completa el correo del arquitecto arriba para vincular su resultado
-              a este registro.
-            </p>
+            <div className="flex justify-between items-start gap-[9px] flex-wrap mb-2">
+              <div>
+                <h2 className="text-[19px] m-0 mb-2">Moving Motivators</h2>
+                <p className="text-[var(--mut)]">
+                  Autoevaluación del propio arquitecto, completada de forma independiente a
+                  través de un enlace. Completa el correo del arquitecto arriba para vincular su
+                  resultado a este registro.
+                </p>
+              </div>
+              <div className="print:hidden flex items-center gap-[7px] text-[13px]">
+                <span className="text-[var(--mut)]">{motivatorsWizardUrl}</span>
+                <button
+                  type="button"
+                  className="border border-[var(--line)] rounded-lg px-[9px] min-h-9 bg-white"
+                  onClick={handleCopyMotivatorsLink}
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
             <MotivatorResultView recordId={recordId} toast={toast} />
           </div>
 

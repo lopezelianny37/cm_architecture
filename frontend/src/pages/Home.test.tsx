@@ -138,20 +138,19 @@ describe('Home — Moving Motivators del equipo', () => {
     );
   });
 
-  it('displays the public wizard URL and copies it on click', async () => {
+  it('no longer shows the public wizard URL/Copiar block (moved to FormView)', async () => {
     mockApiGet(summaryWithSample());
-    const writeText = vi.fn().mockResolvedValue(undefined);
-    Object.assign(navigator, { clipboard: { writeText } });
-
     render(<Home onOpenRecord={() => {}} />);
 
-    await waitFor(() => screen.getByText(`${window.location.origin}/motivadores`));
-    fireEvent.click(screen.getByRole('button', { name: 'Copiar' }));
-
     await waitFor(() =>
-      expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/motivadores`),
+      expect(
+        screen.getByLabelText('Radar de impacto de motivadores del equipo'),
+      ).toBeInTheDocument(),
     );
-    expect(await screen.findByText('Enlace copiado')).toBeInTheDocument();
+    expect(
+      screen.queryByText(`${window.location.origin}/motivadores`),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Copiar' })).not.toBeInTheDocument();
   });
 });
 

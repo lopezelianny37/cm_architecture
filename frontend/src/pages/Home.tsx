@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useDashboardData } from '../hooks/useDashboardData';
-import { useToast } from '../hooks/useToast';
 import { Hero } from '../components/dashboard/Hero';
 import { MetricsCards } from '../components/dashboard/MetricsCards';
 import { Filters } from '../components/dashboard/Filters';
@@ -9,7 +8,6 @@ import { RosterTable } from '../components/dashboard/RosterTable';
 import { BarChart } from '../components/charts/BarChart';
 import { RadarChart } from '../components/charts/RadarChart';
 import { PriorityBarChart } from '../components/charts/PriorityBarChart';
-import { Toast } from '../components/Toast';
 import { BEH_SHORT_LABELS, MOT_NAMES, PUBLIC_MACRODOMAINS } from '../constants/gemba.constants';
 import { impactToRadius } from '../lib/impactToRadius';
 
@@ -36,17 +34,6 @@ export function Home({ onOpenRecord }: HomeProps) {
 
   const [newArchitectName, setNewArchitectName] = useState('');
   const [newMacrodomain, setNewMacrodomain] = useState('');
-  const toast = useToast();
-  const motivatorsWizardUrl = `${window.location.origin}/motivadores`;
-
-  async function handleCopyMotivatorsLink() {
-    try {
-      await navigator.clipboard.writeText(motivatorsWizardUrl);
-      toast.show('Enlace copiado');
-    } catch {
-      toast.show('No se pudo copiar el enlace');
-    }
-  }
 
   async function handleCreate() {
     const name = newArchitectName.trim();
@@ -136,24 +123,10 @@ export function Home({ onOpenRecord }: HomeProps) {
       </div>
 
       <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
-        <div className="flex justify-between items-start gap-[9px] flex-wrap mb-2">
-          <div>
-            <h2 className="text-[19px] m-0 mb-2">Moving Motivators del equipo</h2>
-            <p className="text-[var(--mut)]">
-              Promedio de la autoevaluación pública completada por los arquitectos.
-            </p>
-          </div>
-          <div className="print:hidden flex items-center gap-[7px] text-[13px]">
-            <span className="text-[var(--mut)]">{motivatorsWizardUrl}</span>
-            <button
-              type="button"
-              className="border border-[var(--line)] rounded-lg px-[9px] min-h-9 bg-white"
-              onClick={handleCopyMotivatorsLink}
-            >
-              Copiar
-            </button>
-          </div>
-        </div>
+        <h2 className="text-[19px] m-0 mb-2">Moving Motivators del equipo</h2>
+        <p className="text-[var(--mut)] mb-2">
+          Promedio de la autoevaluación pública completada por los arquitectos.
+        </p>
         {motivatorsSummary && motivatorsSummary.sampleSize === 0 ? (
           <p className="text-[var(--mut)]">
             Todavía no hay autoevaluaciones registradas para este filtro.
@@ -197,8 +170,6 @@ export function Home({ onOpenRecord }: HomeProps) {
         <h2 className="text-[19px] m-0 mb-2">Seguimiento de arquitectos</h2>
         <RosterTable records={records} onOpen={onOpenRecord} />
       </div>
-
-      <Toast message={toast.message} />
     </div>
   );
 }

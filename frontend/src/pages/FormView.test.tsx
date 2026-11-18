@@ -217,3 +217,38 @@ describe('FormView — tab "0 · Resumen" y radar de observaciones individual', 
     ).not.toBeInTheDocument();
   });
 });
+
+describe('FormView — enlace público del wizard (movido desde Home)', () => {
+  beforeEach(() => {
+    vi.mocked(apiClient.get).mockReset();
+    vi.mocked(apiClient.patch).mockReset();
+    vi.mocked(apiClient.patch).mockResolvedValue({});
+  });
+
+  it('shows the public wizard URL inside the Moving Motivators card', async () => {
+    mockGet(buildRecord());
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(`${window.location.origin}/motivadores`),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it('copies the link and shows a confirmation toast when "Copiar" is clicked', async () => {
+    mockGet(buildRecord());
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() => screen.getByText(`${window.location.origin}/motivadores`));
+    fireEvent.click(screen.getByRole('button', { name: 'Copiar' }));
+
+    await waitFor(() =>
+      expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/motivadores`),
+    );
+    expect(await screen.findByText('Enlace copiado')).toBeInTheDocument();
+  });
+});
