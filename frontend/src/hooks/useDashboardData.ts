@@ -3,6 +3,7 @@ import { apiClient } from '../lib/apiClient';
 import type {
   DashboardMetricsResponse,
   DashboardRadarsResponse,
+  MotivatorsSummaryResponse,
   RecordsListResponse,
   RecordRow,
   SettingsResponse,
@@ -23,6 +24,9 @@ export function useDashboardData() {
   const [totalRecordsInScope, setTotalRecordsInScope] = useState(0);
   const [metrics, setMetrics] = useState<DashboardMetricsResponse | null>(null);
   const [radars, setRadars] = useState<DashboardRadarsResponse | null>(null);
+  const [motivatorsSummary, setMotivatorsSummary] = useState<MotivatorsSummaryResponse | null>(
+    null,
+  );
   const [settings, setSettings] = useState<SettingsResponse>({ targetScope: 5 });
   const [loading, setLoading] = useState(false);
   const [refetchIndex, setRefetchIndex] = useState(0);
@@ -56,11 +60,15 @@ export function useDashboardData() {
       apiClient.get<RecordsListResponse>(`/api/records${query}`),
       apiClient.get<DashboardMetricsResponse>(`/api/dashboard/metrics${buildQuery({ macrodomain })}`),
       apiClient.get<DashboardRadarsResponse>(`/api/dashboard/radars${buildQuery({ macrodomain })}`),
+      apiClient.get<MotivatorsSummaryResponse>(
+        `/api/dashboard/motivators-summary${buildQuery({ macrodomain })}`,
+      ),
     ])
-      .then(([recordsRes, metricsRes, radarsRes]) => {
+      .then(([recordsRes, metricsRes, radarsRes, motivatorsSummaryRes]) => {
         setRecords(recordsRes.records);
         setMetrics(metricsRes);
         setRadars(radarsRes);
+        setMotivatorsSummary(motivatorsSummaryRes);
       })
       .finally(() => setLoading(false));
   }, [macrodomain, status, refetchIndex]);
@@ -97,6 +105,7 @@ export function useDashboardData() {
     totalRecordsInScope,
     metrics,
     radars,
+    motivatorsSummary,
     settings,
     updateTargetScope,
     loading,

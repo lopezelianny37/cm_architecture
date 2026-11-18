@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useDashboardData } from '../hooks/useDashboardData';
+import { useToast } from '../hooks/useToast';
 import { Hero } from '../components/dashboard/Hero';
 import { MetricsCards } from '../components/dashboard/MetricsCards';
 import { Filters } from '../components/dashboard/Filters';
@@ -7,8 +8,11 @@ import { ScopeTracker } from '../components/dashboard/ScopeTracker';
 import { RosterTable } from '../components/dashboard/RosterTable';
 import { BarChart } from '../components/charts/BarChart';
 import { RadarChart } from '../components/charts/RadarChart';
+import { PriorityBarChart } from '../components/charts/PriorityBarChart';
+import { Toast } from '../components/Toast';
 import { BEH_SHORT_LABELS, MOT_NAMES } from '../constants/gemba.constants';
 import { gapValueToRadius } from '../lib/radarVisualization';
+import { impactToRadius } from '../lib/impactToRadius';
 
 interface HomeProps {
   onOpenRecord: (id: string) => void;
@@ -25,12 +29,24 @@ export function Home({ onOpenRecord }: HomeProps) {
     totalRecordsInScope,
     metrics,
     radars,
+    motivatorsSummary,
     settings,
     updateTargetScope,
     createRecord,
   } = useDashboardData();
 
   const [newArchitectName, setNewArchitectName] = useState('');
+  const toast = useToast();
+  const motivatorsWizardUrl = `${window.location.origin}/motivadores`;
+
+  async function handleCopyMotivatorsLink() {
+    try {
+      await navigator.clipboard.writeText(motivatorsWizardUrl);
+      toast.show('Enlace copiado');
+    } catch {
+      toast.show('No se pudo copiar el enlace');
+    }
+  }
 
   async function handleCreate() {
     const name = newArchitectName.trim();
@@ -88,29 +104,69 @@ export function Home({ onOpenRecord }: HomeProps) {
         totalGaps={metrics?.totalGaps ?? 0}
       />
 
-      <div className="grid grid-cols-1 tablet:grid-cols-2 gap-[14px]">
-        <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
-          <h2 className="text-[19px] m-0 mb-2">Radar de brechas del equipo</h2>
-          <p className="text-[var(--mut)]">Ejes más cerca del centro indican mayor brecha.</p>
-          <RadarChart
-            labels={BEH_SHORT_LABELS}
-            values={(radars?.gapValues ?? new Array(8).fill(0)).map(gapValueToRadius)}
-            color="#d71920"
-            ariaLabel="Radar de brechas"
-            strokeWidth={2.5}
-            fillOpacity={0.28}
-          />
+      <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
+        <h2 className="text-[19px] m-0 mb-2">Radar de brechas del equipo</h2>
+        <p className="text-[var(--mut)]">Ejes más cerca del centro indican mayor brecha.</p>
+        <RadarChart
+          labels={BEH_SHORT_LABELS}
+          values={(radars?.gapValues ?? new Array(8).fill(0)).map(gapValueToRadius)}
+          color="#d71920"
+          ariaLabel="Radar de brechas"
+          strokeWidth={2.5}
+          fillOpacity={0.28}
+        />
+      </div>
+
+      <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
+        <div className="flex justify-between items-start gap-[9px] flex-wrap mb-2">
+          <div>
+            <h2 className="text-[19px] m-0 mb-2">Moving Motivators del equipo</h2>
+            <p className="text-[var(--mut)]">
+              Promedio de la autoevaluación pública completada por los arquitectos.
+            </p>
+          </div>
+          <div className="print:hidden flex items-center gap-[7px] text-[13px]">
+            <span className="text-[var(--mut)]">{motivatorsWizardUrl}</span>
+            <button
+              type="button"
+              className="border border-[var(--line)] rounded-lg px-[9px] min-h-9 bg-white"
+              onClick={handleCopyMotivatorsLink}
+            >
+              Copiar
+            </button>
+          </div>
         </div>
-        <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
-          <h2 className="text-[19px] m-0 mb-2">Radar de motivadores</h2>
-          <p className="text-[var(--mut)]">Promedio de importancia declarada por los arquitectos.</p>
-          <RadarChart
-            labels={MOT_NAMES}
-            values={radars?.motivatorValues ?? new Array(10).fill(0)}
-            color="#2875d9"
-            ariaLabel="Radar de motivadores"
-          />
-        </div>
+        {motivatorsSummary && motivatorsSummary.sampleSize === 0 ? (
+          <p className="text-[var(--mut)]">
+            Todavía no hay autoevaluaciones registradas para este filtro.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 tablet:grid-cols-2 gap-[14px]">
+            <div>
+              <h3 className="text-[15px] m-0 mb-2">Radar de impacto</h3>
+              <RadarChart
+                labels={MOT_NAMES}
+                values={MOT_NAMES.map((name) =>
+                  impactToRadius(
+                    motivatorsSummary?.radar.find((r) => r.motivator === name)?.avgImpact ?? 0,
+                  ),
+                )}
+                color="#2875d9"
+                ariaLabel="Radar de impacto de motivadores del equipo"
+              />
+            </div>
+            <div>
+              <h3 className="text-[15px] m-0 mb-2">Prioridad</h3>
+              <PriorityBarChart
+                items={(motivatorsSummary?.bars ?? []).map((b) => ({
+                  motivator: b.motivator,
+                  score: b.avgPriorityOrder,
+                }))}
+                ariaLabel="Prioridad de motivadores del equipo"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
@@ -122,6 +178,8 @@ export function Home({ onOpenRecord }: HomeProps) {
         <h2 className="text-[19px] m-0 mb-2">Seguimiento de arquitectos</h2>
         <RosterTable records={records} onOpen={onOpenRecord} />
       </div>
+
+      <Toast message={toast.message} />
     </div>
   );
 }

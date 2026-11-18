@@ -1,0 +1,134 @@
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Home } from './Home';
+import { apiClient } from '../lib/apiClient';
+import { MOT_NAMES } from '../constants/gemba.constants';
+
+vi.mock('../lib/apiClient', () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+  },
+}));
+
+const EMPTY_METRICS = {
+  totalArchitects: 0,
+  completeRecords: 0,
+  totalGaps: 0,
+  csatAverage: null,
+  gapsByType: {},
+};
+
+const EMPTY_RADARS = { gapValues: new Array(8).fill(0), motivatorValues: new Array(10).fill(0) };
+
+function summaryWithSample() {
+  return {
+    sampleSize: 2,
+    radar: MOT_NAMES.map((name, i) => ({ motivator: name, avgImpact: i % 2 === 0 ? 2 : -2 })),
+    bars: MOT_NAMES.map((name, i) => ({ motivator: name, avgPriorityOrder: i + 1 })),
+  };
+}
+
+function emptySummary() {
+  return { sampleSize: 0, radar: [], bars: [] };
+}
+
+function mockApiGet(summary: ReturnType<typeof summaryWithSample> | ReturnType<typeof emptySummary>) {
+  vi.mocked(apiClient.get).mockImplementation((path: string) => {
+    if (path.includes('/api/dashboard/motivators-summary')) return Promise.resolve(summary);
+    if (path.includes('/api/dashboard/metrics')) return Promise.resolve(EMPTY_METRICS);
+    if (path.includes('/api/dashboard/radars')) return Promise.resolve(EMPTY_RADARS);
+    if (path.includes('/api/settings')) return Promise.resolve({ targetScope: 5 });
+    if (path.includes('/api/records')) return Promise.resolve({ records: [], total: 0, hasMore: false });
+    return Promise.reject(new Error(`unexpected path: ${path}`));
+  });
+}
+
+describe('Home — Moving Motivators del equipo', () => {
+  beforeEach(() => {
+    vi.mocked(apiClient.get).mockReset();
+  });
+
+  it('renders the impact radar and priority bars when there are submissions', async () => {
+    mockApiGet(summaryWithSample());
+    render(<Home onOpenRecord={() => {}} />);
+
+    await waitFor(() =>
+      expect(
+        screen.getByLabelText('Radar de impacto de motivadores del equipo'),
+      ).toBeInTheDocument(),
+    );
+    expect(screen.getByLabelText('Prioridad de motivadores del equipo')).toBeInTheDocument();
+  });
+
+  it('renders the bars in the order the backend returns them (already sorted ascending)', async () => {
+    mockApiGet(summaryWithSample());
+    render(<Home onOpenRecord={() => {}} />);
+
+    await waitFor(() => screen.getByLabelText('Prioridad de motivadores del equipo'));
+    const barChart = screen.getByLabelText('Prioridad de motivadores del equipo');
+    const labels = within(barChart)
+      .getAllByText(new RegExp(`^(${MOT_NAMES.join('|')})$`))
+      .map((el) => el.textContent);
+    expect(labels).toEqual(MOT_NAMES);
+  });
+
+  it('shows an empty-state message instead of charts when sampleSize is 0', async () => {
+    mockApiGet(emptySummary());
+    render(<Home onOpenRecord={() => {}} />);
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Todavía no hay autoevaluaciones registradas/),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      screen.queryByLabelText('Radar de impacto de motivadores del equipo'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('refetches motivators-summary with the selected macrodomain', async () => {
+    mockApiGet(summaryWithSample());
+    vi.mocked(apiClient.get).mockImplementation((path: string) => {
+      if (path.includes('/api/dashboard/motivators-summary')) return Promise.resolve(summaryWithSample());
+      if (path.includes('/api/dashboard/metrics')) return Promise.resolve(EMPTY_METRICS);
+      if (path.includes('/api/dashboard/radars')) return Promise.resolve(EMPTY_RADARS);
+      if (path.includes('/api/settings')) return Promise.resolve({ targetScope: 5 });
+      if (path === '/api/records?limit=200')
+        return Promise.resolve({ records: [], total: 0, hasMore: false });
+      if (path.includes('/api/records'))
+        return Promise.resolve({ records: [], total: 0, hasMore: false });
+      return Promise.reject(new Error(`unexpected path: ${path}`));
+    });
+
+    render(<Home onOpenRecord={() => {}} />);
+    await waitFor(() => screen.getByLabelText('Macrodominio'));
+
+    fireEvent.change(screen.getByLabelText('Macrodominio'), { target: { value: 'all' } });
+
+    await waitFor(() =>
+      expect(
+        vi.mocked(apiClient.get).mock.calls.some(([path]) =>
+          String(path).includes('/api/dashboard/motivators-summary'),
+        ),
+      ).toBe(true),
+    );
+  });
+
+  it('displays the public wizard URL and copies it on click', async () => {
+    mockApiGet(summaryWithSample());
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    render(<Home onOpenRecord={() => {}} />);
+
+    await waitFor(() => screen.getByText(`${window.location.origin}/motivadores`));
+    fireEvent.click(screen.getByRole('button', { name: 'Copiar' }));
+
+    await waitFor(() =>
+      expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/motivadores`),
+    );
+    expect(await screen.findByText('Enlace copiado')).toBeInTheDocument();
+  });
+});
