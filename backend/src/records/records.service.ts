@@ -141,6 +141,54 @@ export class RecordsService {
     return { ...data, isComplete: isRecordComplete(data) };
   }
 
+  /**
+   * See SPEC_MOVING_MOTIVATORS_ADDENDUM.md §4. Looks up this record's
+   * architect_email via the USER-scoped client (RLS enforces owner-only
+   * access — a non-owner's record simply won't be found, 404), then joins
+   * moving_motivator_submissions by email via the SERVICE-ROLE client,
+   * since authenticated users have zero RLS access to that table.
+   */
+  async getMotivatorResult(accessToken: string, id: string) {
+    const userClient = this.db.getUserClient(accessToken);
+
+    const { data: record, error } = await userClient
+      .from('gemba_records')
+      .select('architect_email')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!record) throw new NotFoundException('Record not found');
+
+    if (!record.architect_email) {
+      return { found: false };
+    }
+
+    const serviceClient = this.db.getServiceRoleClient();
+    const { data: submission, error: subError } = await serviceClient
+      .from('moving_motivator_submissions')
+      .select('name, email, macrodomain, submitted_at, priorities, impacts')
+      .ilike('email', record.architect_email.trim())
+      .order('submitted_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (subError) throw new Error(subError.message);
+    if (!submission) return { found: false };
+
+    return {
+      found: true,
+      result: {
+        name: submission.name,
+        email: submission.email,
+        macrodomain: submission.macrodomain,
+        submittedAt: submission.submitted_at,
+        priorities: submission.priorities,
+        impacts: submission.impacts,
+      },
+    };
+  }
+
   async update(accessToken: string, id: string, dto: UpdateRecordDto) {
     const client = this.db.getUserClient(accessToken);
 

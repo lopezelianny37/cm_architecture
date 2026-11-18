@@ -122,3 +122,86 @@ describe('DashboardService.getRadars', () => {
     expect(result.motivatorValues[0]).toBe(1);
   });
 });
+
+describe('DashboardService.getMotivatorsSummary', () => {
+  function makeSummaryService(submissions: any[]) {
+    const eqMock = jest.fn().mockReturnThis();
+    const query: any = {
+      select: jest.fn().mockReturnThis(),
+      eq: eqMock,
+    };
+    query.then = (resolve: any) => resolve({ data: submissions, error: null });
+
+    const fromMock = jest.fn().mockReturnValue(query);
+    const client = { from: fromMock };
+    const db = {
+      getServiceRoleClient: jest.fn().mockReturnValue(client),
+    } as unknown as DatabaseService;
+    const service = new DashboardService(db);
+    return { service, fromMock, eqMock };
+  }
+
+  it('returns sampleSize:0 and empty-safe (non-NaN) averages when there are no submissions', async () => {
+    const { service } = makeSummaryService([]);
+    const result = await service.getMotivatorsSummary();
+
+    expect(result.sampleSize).toBe(0);
+    expect(result.radar).toHaveLength(MOT.length);
+    expect(result.bars).toHaveLength(MOT.length);
+    expect(result.radar.every((r) => r.avgImpact === 0)).toBe(true);
+    expect(result.bars.every((b) => Number.isFinite(b.avgPriorityOrder))).toBe(true);
+  });
+
+  it('computes avgImpact correctly across N submissions', async () => {
+    const submissions = [
+      { priorities: [], impacts: [{ motivator: MOT[0].name, impact: 4 }] },
+      { priorities: [], impacts: [{ motivator: MOT[0].name, impact: -2 }] },
+      { priorities: [], impacts: [{ motivator: MOT[0].name, impact: 0 }] },
+    ];
+    const { service } = makeSummaryService(submissions);
+    const result = await service.getMotivatorsSummary();
+
+    const entry = result.radar.find((r) => r.motivator === MOT[0].name)!;
+    expect(entry.avgImpact).toBeCloseTo((4 - 2 + 0) / 3);
+  });
+
+  it('computes avgPriorityOrder correctly and sorts bars ascending (most important first)', async () => {
+    // Give every motivator a value in both submissions so none fall back to
+    // the empty-safe default of 0 (which would otherwise sort first and
+    // confound the assertion below).
+    function fullPriorities(mot0Value: number, mot1Value: number) {
+      return MOT.map((m, i) => ({
+        motivator: m.name,
+        priorityOrder: m.name === MOT[0].name ? mot0Value : m.name === MOT[1].name ? mot1Value : i + 2,
+      }));
+    }
+
+    const submissions = [
+      { priorities: fullPriorities(1, 10), impacts: [] },
+      { priorities: fullPriorities(3, 8), impacts: [] },
+    ];
+    const { service } = makeSummaryService(submissions);
+    const result = await service.getMotivatorsSummary();
+
+    const mot0 = result.bars.find((b) => b.motivator === MOT[0].name)!;
+    const mot1 = result.bars.find((b) => b.motivator === MOT[1].name)!;
+    expect(mot0.avgPriorityOrder).toBeCloseTo((1 + 3) / 2); // 2
+    expect(mot1.avgPriorityOrder).toBeCloseTo((10 + 8) / 2); // 9
+
+    const sorted = [...result.bars].sort((a, b) => a.avgPriorityOrder - b.avgPriorityOrder);
+    expect(result.bars).toEqual(sorted);
+    expect(result.bars[0].motivator).toBe(MOT[0].name); // lowest avg = most important = first
+  });
+
+  it('filters by macrodomain when provided', async () => {
+    const { service, eqMock } = makeSummaryService([]);
+    await service.getMotivatorsSummary('Business Line');
+    expect(eqMock).toHaveBeenCalledWith('macrodomain', 'Business Line');
+  });
+
+  it('does not filter when macrodomain is omitted', async () => {
+    const { service, eqMock } = makeSummaryService([]);
+    await service.getMotivatorsSummary();
+    expect(eqMock).not.toHaveBeenCalled();
+  });
+});

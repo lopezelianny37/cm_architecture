@@ -18,4 +18,9 @@ export class DashboardController {
   getRadars(@AccessToken() token: string, @Query() query: QueryDashboardDto) {
     return this.dashboardService.getRadars(token, query.macrodomain);
   }
+
+  @Get('motivators-summary')
+  getMotivatorsSummary(@Query() query: QueryDashboardDto) {
+    return this.dashboardService.getMotivatorsSummary(query.macrodomain);
+  }
 }

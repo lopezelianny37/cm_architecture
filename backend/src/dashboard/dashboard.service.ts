@@ -4,6 +4,7 @@ import { BEH, MOT, TYPES } from '@/common/constants/gemba.constants';
 import { isRecordComplete, GapEntry, FlowStep } from '@/common/utils/gemba-complete.util';
 import { DashboardMetricsResponse } from './dto/dashboard-metrics.dto';
 import { DashboardRadarsResponse } from './dto/dashboard-radars.dto';
+import { MotivatorsSummaryResponse } from './dto/motivators-summary.dto';
 
 interface BehaviorRow {
   state: 'si' | 'par' | 'no' | 'na';
@@ -127,5 +128,61 @@ export class DashboardService {
     });
 
     return { gapValues, motivatorValues };
+  }
+
+  /**
+   * Team-level aggregate from the NEW moving_motivator_submissions table
+   * (public self-assessment flow) — distinct from getRadars()'s
+   * motivatorValues above, which still reads the OLD, frozen
+   * gemba_moving_motivators table. See SPEC_MOVING_MOTIVATORS_ADDENDUM.md
+   * §4/§8. Uses the service-role client: authenticated users have no RLS
+   * access to moving_motivator_submissions, and this aggregate is
+   * intentionally NOT owner-scoped (team-wide, no PII beyond motivator
+   * names/scores).
+   */
+  async getMotivatorsSummary(
+    macrodomain?: string,
+  ): Promise<MotivatorsSummaryResponse> {
+    const client = this.db.getServiceRoleClient();
+    let query = client
+      .from('moving_motivator_submissions')
+      .select('priorities, impacts');
+
+    if (macrodomain) {
+      query = query.eq('macrodomain', macrodomain);
+    }
+
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+
+    const submissions = (data ?? []) as Array<{
+      priorities: Array<{ motivator: string; priorityOrder: number }>;
+      impacts: Array<{ motivator: string; impact: number }>;
+    }>;
+    const sampleSize = submissions.length;
+
+    const radar = MOT.map((m) => {
+      const values = submissions
+        .map((s) => s.impacts?.find((i) => i.motivator === m.name)?.impact)
+        .filter((v): v is number => v != null);
+
+      const avgImpact =
+        values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+
+      return { motivator: m.name, avgImpact };
+    });
+
+    const bars = MOT.map((m) => {
+      const values = submissions
+        .map((s) => s.priorities?.find((p) => p.motivator === m.name)?.priorityOrder)
+        .filter((v): v is number => v != null);
+
+      const avgPriorityOrder =
+        values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+
+      return { motivator: m.name, avgPriorityOrder };
+    }).sort((a, b) => a.avgPriorityOrder - b.avgPriorityOrder);
+
+    return { sampleSize, radar, bars };
   }
 }

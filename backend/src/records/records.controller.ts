@@ -22,6 +22,11 @@ export class RecordsController {
     return this.recordsService.findOne(token, id);
   }
 
+  @Get(':id/motivator-result')
+  getMotivatorResult(@AccessToken() token: string, @Param('id') id: string) {
+    return this.recordsService.getMotivatorResult(token, id);
+  }
+
   @Post()
   createRecord(
     @AccessToken() token: string,
