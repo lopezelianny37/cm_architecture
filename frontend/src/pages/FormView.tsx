@@ -241,22 +241,6 @@ export function FormView({ recordId, onBack }: FormViewProps) {
 
       {activeTab === 'prep' && (
         <>
-          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
-            <h2 className="text-[19px] m-0 mb-2">Radar de observaciones individual</h2>
-            <p className="text-[var(--mut)]">
-              Tu perfil de observación en este ciclo. El centro indica que el comportamiento no
-              aplicó; se aleja del centro según fue no observado, parcial u observado.
-            </p>
-            <RadarChart
-              labels={BEH_SHORT_LABELS}
-              values={computeIndividualObservationRadar(currentBehaviors)}
-              color="#d71920"
-              ariaLabel="Radar de observaciones individual"
-              strokeWidth={2.5}
-              fillOpacity={0.28}
-            />
-          </div>
-
           <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[#fff4dc] text-[var(--amber)] mb-2">
               Desire · Management 3.0
@@ -288,6 +272,22 @@ export function FormView({ recordId, onBack }: FormViewProps) {
               a este registro.
             </p>
             <MotivatorResultView recordId={recordId} toast={toast} />
+          </div>
+
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
+            <h2 className="text-[19px] m-0 mb-2">Radar de observaciones individual</h2>
+            <p className="text-[var(--mut)]">
+              Tu perfil de observación en este ciclo. El centro indica que el comportamiento no
+              aplicó; se aleja del centro según fue no observado, parcial u observado.
+            </p>
+            <RadarChart
+              labels={BEH_SHORT_LABELS}
+              values={computeIndividualObservationRadar(currentBehaviors)}
+              color="#d71920"
+              ariaLabel="Radar de observaciones individual"
+              strokeWidth={2.5}
+              fillOpacity={0.28}
+            />
           </div>
         </>
       )}

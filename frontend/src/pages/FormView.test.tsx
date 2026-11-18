@@ -175,7 +175,7 @@ describe('FormView — tab "0 · Resumen" y radar de observaciones individual', 
     expect(screen.queryByText('0 · Preparar')).not.toBeInTheDocument();
   });
 
-  it('shows the individual observation radar at the start of the default (Resumen) tab', async () => {
+  it('shows the individual observation radar in the default (Resumen) tab', async () => {
     mockGet(buildRecord());
     render(<FormView recordId="r1" onBack={() => {}} />);
 
@@ -184,6 +184,19 @@ describe('FormView — tab "0 · Resumen" y radar de observaciones individual', 
         screen.getByLabelText('Radar de observaciones individual'),
       ).toBeInTheDocument(),
     );
+  });
+
+  it('places the radar last, after "Preparar" and "Moving Motivators"', async () => {
+    mockGet(buildRecord());
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() => screen.getByLabelText('Radar de observaciones individual'));
+    const headings = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(headings).toEqual([
+      'Preparar: valor, barreras y motivadores',
+      'Moving Motivators',
+      'Radar de observaciones individual',
+    ]);
   });
 
   it('no longer shows the radar on the Diagnóstico tab', async () => {
