@@ -159,3 +159,48 @@ describe('FormView — campo Estado de la iniciativa', () => {
     vi.useRealTimers();
   });
 });
+
+describe('FormView — tab "0 · Resumen" y radar de observaciones individual', () => {
+  beforeEach(() => {
+    vi.mocked(apiClient.get).mockReset();
+    vi.mocked(apiClient.patch).mockReset();
+    vi.mocked(apiClient.patch).mockResolvedValue({});
+  });
+
+  it('renders "0 · Resumen" instead of "0 · Preparar"', async () => {
+    mockGet(buildRecord());
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() => screen.getByText('0 · Resumen'));
+    expect(screen.queryByText('0 · Preparar')).not.toBeInTheDocument();
+  });
+
+  it('shows the individual observation radar at the start of the default (Resumen) tab', async () => {
+    mockGet(buildRecord());
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() =>
+      expect(
+        screen.getByLabelText('Radar de observaciones individual'),
+      ).toBeInTheDocument(),
+    );
+  });
+
+  it('no longer shows the radar on the Diagnóstico tab', async () => {
+    mockGet(
+      buildRecord({
+        behaviors: [{ state: 'si', fact: '', artifact: '' }],
+        flow_steps: [{ step: '', objective: 'Entender', with: '', out: '', waste: '', observations: '' }],
+      }),
+    );
+    render(<FormView recordId="r1" onBack={() => {}} />);
+
+    await waitFor(() => screen.getByText('2 · Diagnóstico'));
+    fireEvent.click(screen.getByText('2 · Diagnóstico'));
+
+    await waitFor(() => screen.getByText('El arquitecto habla primero'));
+    expect(
+      screen.queryByLabelText('Radar de observaciones individual'),
+    ).not.toBeInTheDocument();
+  });
+});
