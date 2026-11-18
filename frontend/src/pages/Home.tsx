@@ -169,6 +169,7 @@ export function Home({ onOpenRecord }: HomeProps) {
                 )}
                 color="#2875d9"
                 ariaLabel="Radar de impacto de motivadores del equipo"
+                highlightRingLevel={2}
               />
             </div>
             <div>

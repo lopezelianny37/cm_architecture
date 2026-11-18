@@ -5,6 +5,10 @@ interface RadarChartProps {
   ariaLabel: string;
   strokeWidth?: number;
   fillOpacity?: number;
+  /** Grid ring (1..4) to draw in red instead of the default gray — e.g. the
+   * neutral/impact-zero ring on the motivators impact radar. Leave
+   * undefined everywhere else. */
+  highlightRingLevel?: number;
 }
 
 const CX = 210;
@@ -23,6 +27,7 @@ export function RadarChart({
   ariaLabel,
   strokeWidth = 2,
   fillOpacity = 0.2,
+  highlightRingLevel,
 }: RadarChartProps) {
   const n = labels.length;
   const gridLevels = [1, 2, 3, 4];
@@ -36,8 +41,15 @@ export function RadarChart({
         const ringPoints = labels
           .map((_, i) => point(n, i, l / 4).join(','))
           .join(' ');
+        const isHighlighted = l === highlightRingLevel;
         return (
-          <polygon key={l} points={ringPoints} fill="none" stroke="#dce3ed" />
+          <polygon
+            key={l}
+            points={ringPoints}
+            fill="none"
+            stroke={isHighlighted ? '#d71920' : '#dce3ed'}
+            strokeWidth={isHighlighted ? 1.5 : 1}
+          />
         );
       })}
 

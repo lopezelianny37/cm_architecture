@@ -85,6 +85,7 @@ export function MotivatorResultView({ recordId, toast }: MotivatorResultViewProp
           values={radarValues}
           color="#2875d9"
           ariaLabel="Radar de motivadores del arquitecto"
+          highlightRingLevel={2}
         />
       </div>
       <div>
