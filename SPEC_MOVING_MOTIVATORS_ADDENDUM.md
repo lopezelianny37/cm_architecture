@@ -90,8 +90,8 @@ Public (no auth)                         Authenticated (existing facilitator)
 
 **Step 1 — Ordenar (Management 3.0, Paso 1)**
 - Renders the same 10 motivator cards as today's `MOT` constant (name + description), using the **official Management 3.0 card visuals/copy** already present in the prototype — no new content to author.
-- Interaction: **horizontal drag-and-drop**, left→right. Convention (matches the official Moving Motivators exercise): **leftmost = least important, rightmost = most important.**
-- Internally stored as `priorityOrder` 1..10 where **1 = most important** (i.e., rightmost card at submit time), decoupled from the visual drag direction — this is what the backend/bar-chart consume (see Ambiguity #7/#8).
+- Interaction: **horizontal drag-and-drop**, left→right. Convention (corrected per facilitator feedback — this app's exercise, not a literal port of the official one): **leftmost = most important, rightmost = least important.**
+- Internally stored as `priorityOrder` 1..10 where **1 = most important** (i.e., leftmost card at submit time), decoupled from the visual drag direction — this is what the backend/bar-chart consume (see Ambiguity #7/#8).
 - "Siguiente" enabled once all 10 cards have been placed (initial order is a neutral shuffle or the fixed `MOT` order — not pre-ranked, to avoid anchoring bias).
 
 **Step 2 — Impacto (Management 3.0, Paso 2)**
@@ -240,7 +240,7 @@ Each phase below is intentionally short and independently testable — no phase 
 **Deliverable:** Step 0 renders with the 5 fixed options in the specified order, validates, advances.
 
 ### Phase D — Public Wizard: Step 1 (Ordenar)
-**Scope:** 10 Management-3.0-style cards, horizontal drag-and-drop reorder. Internal state tracks `priorityOrder` (1 = rightmost/most important). No backend call yet.
+**Scope:** 10 Management-3.0-style cards, horizontal drag-and-drop reorder. Internal state tracks `priorityOrder` (1 = leftmost/most important). No backend call yet.
 
 **Deliverable:** Drag-order works, order is internally consistent with the 1=most-important convention.
 
@@ -321,8 +321,8 @@ Playwright:
 Playwright:
 ✓ All 10 motivator cards render with name + description
 ✓ Drag card from position 10 to position 1 → visual order updates
-✓ Internal state: card at rightmost slot has priorityOrder = 1
-✓ Internal state: card at leftmost slot has priorityOrder = 10
+✓ Internal state: card at leftmost slot has priorityOrder = 1
+✓ Internal state: card at rightmost slot has priorityOrder = 10
 ✓ "Siguiente" disabled until all 10 cards have a defined position (if partial order is possible in the UI)
 ✓ Back button returns to Step 0 without losing Step 0 data
 ```

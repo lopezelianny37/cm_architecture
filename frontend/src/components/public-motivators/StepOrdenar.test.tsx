@@ -14,11 +14,11 @@ function renderStep(order = MOT_NAMES) {
 }
 
 describe('StepOrdenar', () => {
-  it('renders all 10 motivator cards with name + description', () => {
+  it('renders all 10 motivator cards, with the description available as a title tooltip', () => {
     renderStep();
     for (const m of MOT) {
-      expect(screen.getByText(m.name)).toBeInTheDocument();
-      expect(screen.getByText(m.description)).toBeInTheDocument();
+      const card = screen.getByText(m.name).closest('[draggable]');
+      expect(card).toHaveAttribute('title', m.description);
     }
   });
 
@@ -71,5 +71,11 @@ describe('StepOrdenar', () => {
     const { onBack } = renderStep();
     fireEvent.click(screen.getByText('Atrás'));
     expect(onBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('labels the left side as most important and the right side as least important', () => {
+    renderStep();
+    expect(screen.getByText('← Más importante')).toBeInTheDocument();
+    expect(screen.getByText('Menos importante →')).toBeInTheDocument();
   });
 });

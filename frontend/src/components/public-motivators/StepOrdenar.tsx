@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { MOT } from '../../constants/gemba.constants';
 
 interface StepOrdenarProps {
-  /** Motivator names in left-to-right visual order. */
+  /** Motivator names in left-to-right visual order (left = most important). */
   order: string[];
   onChange: (order: string[]) => void;
   onNext: () => void;
@@ -46,16 +46,16 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
       </span>
       <h2 className="text-[19px] m-0 mb-2">¿Qué te mueve?</h2>
       <p className="text-[var(--mut)] mb-3">
-        Arrastrá las tarjetas: a la izquierda las menos importantes, a la derecha las más
+        Arrastrá las tarjetas: a la izquierda las más importantes, a la derecha las menos
         importantes para vos.
       </p>
 
       <div className="flex justify-between text-[11px] font-bold text-[var(--mut)] mb-1 px-1">
-        <span>← Menos importante</span>
-        <span>Más importante →</span>
+        <span>← Más importante</span>
+        <span>Menos importante →</span>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="grid grid-cols-2 tablet:grid-cols-5 desktop:grid-cols-10 gap-[6px]">
         {order.map((name) => {
           const def = MOT_BY_NAME.get(name);
           if (!def) return null;
@@ -66,14 +66,16 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
               onDragStart={() => setDraggedName(name)}
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleDrop(name)}
-              className="flex-none w-[150px] border border-[var(--line)] rounded-xl p-[10px] bg-white cursor-grab"
+              title={def.description}
+              className="border border-[var(--line)] rounded-xl p-[6px] bg-white cursor-grab flex flex-col items-center text-center min-w-0"
             >
-              <b className="block text-[13px] mb-1">{def.name}</b>
-              <span className="text-[11px] text-[var(--mut)]">{def.description}</span>
-              <div className="flex justify-between mt-2">
+              <b className="block text-[11px] desktop:text-[10px] leading-tight mb-1 break-words">
+                {def.name}
+              </b>
+              <div className="flex gap-[4px]">
                 <button
                   type="button"
-                  className="print:hidden w-11 h-11 border border-[var(--line)] rounded-lg bg-white"
+                  className="print:hidden w-11 h-11 desktop:w-6 desktop:h-6 border border-[var(--line)] rounded-lg bg-white text-[14px] desktop:text-[10px] shrink-0"
                   onClick={() => onChange(swap(order, name, 'left'))}
                   aria-label={`Mover ${name} a la izquierda`}
                 >
@@ -81,7 +83,7 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
                 </button>
                 <button
                   type="button"
-                  className="print:hidden w-11 h-11 border border-[var(--line)] rounded-lg bg-white"
+                  className="print:hidden w-11 h-11 desktop:w-6 desktop:h-6 border border-[var(--line)] rounded-lg bg-white text-[14px] desktop:text-[10px] shrink-0"
                   onClick={() => onChange(swap(order, name, 'right'))}
                   aria-label={`Mover ${name} a la derecha`}
                 >
