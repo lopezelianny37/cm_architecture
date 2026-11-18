@@ -53,18 +53,25 @@ export const BEH_NAMES: string[] = BEH.map((b) => b.name);
 
 export const WASTE_TYPES: string[] = ['Retrabajo', 'Supuesto', 'Espera', 'Oportunidad'];
 
-export const MOT_NAMES: string[] = [
-  'Aceptación',
-  'Curiosidad',
-  'Libertad',
-  'Estatus',
-  'Meta',
-  'Honor',
-  'Maestría',
-  'Orden',
-  'Poder',
-  'Relaciones',
+export interface MotivatorDef {
+  name: string;
+  description: string;
+}
+
+export const MOT: MotivatorDef[] = [
+  { name: 'Aceptación', description: 'Las personas que me rodean aprueban lo que hago y quién soy.' },
+  { name: 'Curiosidad', description: 'Tengo muchas cosas que investigar y sobre las cuales pensar.' },
+  { name: 'Libertad', description: 'Soy independiente de otros con mi trabajo y mis responsabilidades.' },
+  { name: 'Estatus', description: 'Mi posición es buena y reconocida por las personas que trabajan conmigo.' },
+  { name: 'Meta', description: 'Mi propósito en la vida se refleja en el trabajo que hago.' },
+  { name: 'Honor', description: 'Mis valores personales se reflejan en cómo trabajo.' },
+  { name: 'Maestría', description: 'Mi trabajo desafía mis competencias, pero sigue dentro de mis capacidades.' },
+  { name: 'Orden', description: 'Existen suficientes reglas y políticas para un ambiente estable.' },
+  { name: 'Poder', description: 'Hay suficiente espacio para influir en lo que sucede a mi alrededor.' },
+  { name: 'Relaciones', description: 'Tengo buenas relaciones sociales con las personas en mi trabajo.' },
 ];
+
+export const MOT_NAMES: string[] = MOT.map((m) => m.name);
 
 export const TYPES: string[] = ['Conocimiento', 'Competencia'];
 
