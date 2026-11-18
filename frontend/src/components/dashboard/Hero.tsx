@@ -12,9 +12,9 @@ export function Hero() {
         necesita cambiar en el sistema para que el nuevo rol pueda ejercerse.
       </p>
       <div className="p-[11px_13px] border-l-4 border-[var(--blue)] bg-[var(--sky)] rounded-lg mt-3">
-        <b>Hipótesis de observación:</b> Si acompañamos al arquitecto en su trabajo diario para
-        identificar y cerrar brechas de comportamiento, aumentará su capacidad para cocrear con
-        negocio y tomar decisiones más informadas y orientadas a valor.
+        <b>Hipótesis de observación:</b> Si observamos a los arquitectos en su trabajo diario,
+        podremos identificar y diagnosticar brechas en las capacidades necesarias para comprender
+        el negocio, cocrear soluciones y tomar decisiones orientadas al valor.
       </div>
     </div>
   );
