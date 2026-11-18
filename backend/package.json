@@ -22,11 +22,17 @@
   "jest": {
     "rootDir": "src",
     "testEnvironment": "node",
-    "setupFiles": ["reflect-metadata"],
+    "setupFiles": [
+      "reflect-metadata"
+    ],
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },
-    "moduleFileExtensions": ["ts", "js", "json"],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/$1"
@@ -40,6 +46,7 @@
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^10.2.0",
     "@nestjs/swagger": "^12.1.2",
+    "@nestjs/throttler": "^6.8.0",
     "@supabase/supabase-js": "^2.38.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",

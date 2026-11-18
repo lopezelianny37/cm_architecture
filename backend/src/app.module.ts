@@ -7,6 +7,7 @@ import { RecordsModule } from './records/records.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SettingsModule } from './settings/settings.module';
 import { ImportExportModule } from './import-export/import-export.module';
+import { PublicMotivatorsModule } from './public-motivators/public-motivators.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ImportExportModule } from './import-export/import-export.module';
     DashboardModule,
     SettingsModule,
     ImportExportModule,
+    PublicMotivatorsModule,
   ],
   controllers: [AppController],
 })

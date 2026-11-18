@@ -34,6 +34,23 @@ export class DatabaseService implements OnModuleInit {
     });
   }
 
+  /**
+   * Bypasses RLS entirely. Only for server-side-only flows with no
+   * auth.uid() to scope to — currently just the public moving-motivators
+   * endpoint (see SPEC_MOVING_MOTIVATORS_ADDENDUM.md, Ambiguity #1). Never
+   * exposed to the frontend; the key itself lives only in backend env vars.
+   */
+  getServiceRoleClient(): SupabaseClient {
+    const supabaseUrl = process.env.SUPABASE_URL || 'http://localhost:54321';
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!serviceRoleKey) {
+      throw new Error('SUPABASE_SERVICE_ROLE_KEY is not configured');
+    }
+
+    return createClient(supabaseUrl, serviceRoleKey);
+  }
+
   async checkConnection(): Promise<boolean> {
     try {
       const { data, error } = await this.supabase.rpc('ping', {});

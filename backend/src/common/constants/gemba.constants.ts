@@ -103,3 +103,17 @@ export const FLOWQ: string[] = [
   '¿Qué paso generó mayor espera o retrabajo?',
   '¿Qué paso faltó y hubiera cambiado la decisión?',
 ];
+
+/**
+ * Fixed, closed list for the public Moving Motivators wizard's macrodomain
+ * select — see SPEC_MOVING_MOTIVATORS_ADDENDUM.md, Ambiguity #9. No "Otro",
+ * no free text, no dynamic fetch. Order matters (rendered in this order).
+ * This exact string set is also the server-side whitelist on submit.
+ */
+export const PUBLIC_MACRODOMAINS: string[] = [
+  'CX & Engagement',
+  'Business Line',
+  'Enterprise Technology',
+  'Enablement Service',
+  'Technology Foundation',
+];
