@@ -132,3 +132,54 @@ describe('Home — Moving Motivators del equipo', () => {
     expect(await screen.findByText('Enlace copiado')).toBeInTheDocument();
   });
 });
+
+describe('Home — crear nuevo arquitecto/ciclo', () => {
+  beforeEach(() => {
+    vi.mocked(apiClient.get).mockReset();
+    vi.mocked(apiClient.post).mockReset();
+  });
+
+  it('disables the create button until both name and macrodomain are filled', async () => {
+    mockApiGet(emptySummary());
+    render(<Home onOpenRecord={() => {}} />);
+    await waitFor(() => screen.getByLabelText('Macrodominio del nuevo arquitecto'));
+
+    const createButton = screen.getByRole('button', { name: '+ Nuevo arquitecto / ciclo' });
+    expect(createButton).toBeDisabled();
+
+    fireEvent.change(screen.getByPlaceholderText('Nombre del arquitecto'), {
+      target: { value: 'Nueva Arquitecta' },
+    });
+    expect(createButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('Macrodominio del nuevo arquitecto'), {
+      target: { value: 'Enterprise Technology' },
+    });
+    expect(createButton).toBeEnabled();
+  });
+
+  it('sends the selected macrodomain along with the record on create', async () => {
+    mockApiGet(emptySummary());
+    vi.mocked(apiClient.post).mockResolvedValue({ id: 'new-record-id' });
+    const onOpenRecord = vi.fn();
+
+    render(<Home onOpenRecord={onOpenRecord} />);
+    await waitFor(() => screen.getByLabelText('Macrodominio del nuevo arquitecto'));
+
+    fireEvent.change(screen.getByPlaceholderText('Nombre del arquitecto'), {
+      target: { value: 'Nueva Arquitecta' },
+    });
+    fireEvent.change(screen.getByLabelText('Macrodominio del nuevo arquitecto'), {
+      target: { value: 'Enterprise Technology' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '+ Nuevo arquitecto / ciclo' }));
+
+    await waitFor(() =>
+      expect(apiClient.post).toHaveBeenCalledWith('/api/records', {
+        architectName: 'Nueva Arquitecta',
+        macrodomain: 'Enterprise Technology',
+      }),
+    );
+    expect(onOpenRecord).toHaveBeenCalledWith('new-record-id');
+  });
+});

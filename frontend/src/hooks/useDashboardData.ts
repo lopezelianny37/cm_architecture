@@ -87,8 +87,11 @@ export function useDashboardData() {
   }, []);
 
   const createRecord = useCallback(
-    async (architectName: string) => {
-      const created = await apiClient.post<{ id: string }>('/api/records', { architectName });
+    async (architectName: string, recordMacrodomain: string) => {
+      const created = await apiClient.post<{ id: string }>('/api/records', {
+        architectName,
+        macrodomain: recordMacrodomain,
+      });
       refetch();
       return created.id;
     },

@@ -14,7 +14,7 @@ import { Toast } from '../components/Toast';
 import { exportOneRecord } from '../lib/exportImport';
 import { computeIndividualGapRadar } from '../lib/individualRadar';
 import { gapValueToRadius } from '../lib/radarVisualization';
-import { BEH_SHORT_LABELS } from '../constants/gemba.constants';
+import { BEH_SHORT_LABELS, PUBLIC_MACRODOMAINS } from '../constants/gemba.constants';
 import type { BehaviorObservation, ConditionEntry, FlowStep, Gap } from '../types/api';
 
 interface FormViewProps {
@@ -112,6 +112,18 @@ export function FormView({ recordId, onBack }: FormViewProps) {
   const hasFlowStep = currentFlowSteps.some((f) => f.objective || f.out);
   const diagReady = hasObservedBehavior && hasFlowStep;
 
+  // A record saved before the macrodomain list was fixed to
+  // PUBLIC_MACRODOMAINS may hold a free-text value (e.g. "Data",
+  // "Channels") — keep it as its own option instead of silently losing it,
+  // the same accommodation already used for legacy gap types in GapsTable.
+  const macrodomainOptions = [
+    { value: '', label: 'Seleccioná un macrodominio' },
+    ...(record.macrodomain && !PUBLIC_MACRODOMAINS.includes(record.macrodomain)
+      ? [{ value: record.macrodomain, label: `${record.macrodomain} (macrodominio anterior)` }]
+      : []),
+    ...PUBLIC_MACRODOMAINS.map((m) => ({ value: m, label: m })),
+  ];
+
   async function handleExportRecord() {
     try {
       await exportOneRecord(recordId);
@@ -134,7 +146,8 @@ export function FormView({ recordId, onBack }: FormViewProps) {
           <AutoSaveField
             label="Macrodominio"
             initialValue={record.macrodomain ?? ''}
-            placeholder="Ej.: Data, Channels"
+            as="select"
+            options={macrodomainOptions}
             onSave={(v) => updateField({ macrodomain: v })}
           />
           <AutoSaveField

@@ -10,7 +10,7 @@ import { BarChart } from '../components/charts/BarChart';
 import { RadarChart } from '../components/charts/RadarChart';
 import { PriorityBarChart } from '../components/charts/PriorityBarChart';
 import { Toast } from '../components/Toast';
-import { BEH_SHORT_LABELS, MOT_NAMES } from '../constants/gemba.constants';
+import { BEH_SHORT_LABELS, MOT_NAMES, PUBLIC_MACRODOMAINS } from '../constants/gemba.constants';
 import { gapValueToRadius } from '../lib/radarVisualization';
 import { impactToRadius } from '../lib/impactToRadius';
 
@@ -36,6 +36,7 @@ export function Home({ onOpenRecord }: HomeProps) {
   } = useDashboardData();
 
   const [newArchitectName, setNewArchitectName] = useState('');
+  const [newMacrodomain, setNewMacrodomain] = useState('');
   const toast = useToast();
   const motivatorsWizardUrl = `${window.location.origin}/motivadores`;
 
@@ -50,9 +51,10 @@ export function Home({ onOpenRecord }: HomeProps) {
 
   async function handleCreate() {
     const name = newArchitectName.trim();
-    if (!name) return;
-    const id = await createRecord(name);
+    if (!name || !newMacrodomain) return;
+    const id = await createRecord(name, newMacrodomain);
     setNewArchitectName('');
+    setNewMacrodomain('');
     onOpenRecord(id);
   }
 
@@ -78,9 +80,23 @@ export function Home({ onOpenRecord }: HomeProps) {
               value={newArchitectName}
               onChange={(e) => setNewArchitectName(e.target.value)}
             />
+            <select
+              className="border border-[var(--line)] rounded-lg p-2 min-h-11 bg-white"
+              aria-label="Macrodominio del nuevo arquitecto"
+              value={newMacrodomain}
+              onChange={(e) => setNewMacrodomain(e.target.value)}
+            >
+              <option value="">Seleccioná un macrodominio</option>
+              {PUBLIC_MACRODOMAINS.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
             <button
-              className="print:hidden border-0 rounded-lg px-[13px] py-2 min-h-11 font-extrabold bg-[var(--red)] text-white"
+              className="print:hidden border-0 rounded-lg px-[13px] py-2 min-h-11 font-extrabold bg-[var(--red)] text-white disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleCreate}
+              disabled={!newArchitectName.trim() || !newMacrodomain}
             >
               + Nuevo arquitecto / ciclo
             </button>

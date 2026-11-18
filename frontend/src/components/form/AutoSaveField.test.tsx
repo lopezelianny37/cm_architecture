@@ -59,4 +59,26 @@ describe('AutoSaveField + useAutoSave', () => {
     expect(onSave).toHaveBeenCalledTimes(1);
     expect(onSave).toHaveBeenCalledWith('ab');
   });
+
+  it('as="select" renders the given options and auto-saves on change', () => {
+    const onSave = vi.fn();
+    render(
+      <AutoSaveField
+        label="Macrodominio"
+        initialValue="Business Line"
+        as="select"
+        options={[
+          { value: 'Business Line', label: 'Business Line' },
+          { value: 'Enterprise Technology', label: 'Enterprise Technology' },
+        ]}
+        onSave={onSave}
+      />,
+    );
+
+    const select = screen.getByLabelText('Macrodominio');
+    fireEvent.change(select, { target: { value: 'Enterprise Technology' } });
+    vi.advanceTimersByTime(600);
+
+    expect(onSave).toHaveBeenCalledWith('Enterprise Technology');
+  });
 });

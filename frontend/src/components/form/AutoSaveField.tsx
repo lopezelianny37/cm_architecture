@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { useAutoSave } from '../../hooks/useAutoSave';
 
+interface AutoSaveFieldOption {
+  value: string;
+  label: string;
+}
+
 interface AutoSaveFieldProps {
   label: string;
   initialValue: string;
   onSave: (value: string) => void;
   placeholder?: string;
-  as?: 'input' | 'textarea';
+  as?: 'input' | 'textarea' | 'select';
   rows?: number;
+  options?: AutoSaveFieldOption[];
 }
 
 export function AutoSaveField({
@@ -17,6 +23,7 @@ export function AutoSaveField({
   placeholder,
   as = 'input',
   rows = 4,
+  options,
 }: AutoSaveFieldProps) {
   const [value, setValue] = useState(initialValue);
   useAutoSave(value, onSave);
@@ -34,6 +41,14 @@ export function AutoSaveField({
           placeholder={placeholder}
           onChange={(e) => setValue(e.target.value)}
         />
+      ) : as === 'select' ? (
+        <select className={className} value={value} onChange={(e) => setValue(e.target.value)}>
+          {(options ?? []).map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
       ) : (
         <input
           className={className}
