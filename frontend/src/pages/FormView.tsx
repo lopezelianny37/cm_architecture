@@ -295,7 +295,7 @@ export function FormView({ recordId, onBack }: FormViewProps) {
                 </button>
               </div>
             </div>
-            <MotivatorResultView recordId={recordId} toast={toast} />
+            <MotivatorResultView recordId={recordId} />
           </div>
 
           <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">

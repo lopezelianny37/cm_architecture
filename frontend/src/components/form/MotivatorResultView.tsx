@@ -8,16 +8,16 @@ import type { MotivatorResultResponse } from '../../types/api';
 
 interface MotivatorResultViewProps {
   recordId: string;
-  toast: { show: (text: string) => void };
 }
 
 /**
  * Read-only view of the architect's own Moving Motivators self-assessment,
  * submitted via the public, loginless wizard (see
  * SPEC_MOVING_MOTIVATORS_ADDENDUM.md). The facilitator never edits these
- * values directly.
+ * values directly. Copying the public wizard link lives one level up, in
+ * the "Moving Motivators" card header — not duplicated here.
  */
-export function MotivatorResultView({ recordId, toast }: MotivatorResultViewProps) {
+export function MotivatorResultView({ recordId }: MotivatorResultViewProps) {
   const [result, setResult] = useState<MotivatorResultResponse | null>(null);
 
   useEffect(() => {
@@ -32,35 +32,16 @@ export function MotivatorResultView({ recordId, toast }: MotivatorResultViewProp
     };
   }, [recordId]);
 
-  async function handleCopyLink() {
-    const link = `${window.location.origin}/motivadores`;
-    try {
-      await navigator.clipboard.writeText(link);
-      toast.show('Enlace copiado');
-    } catch {
-      toast.show('No se pudo copiar el enlace');
-    }
-  }
-
   if (result === null) {
     return <p className="text-[var(--mut)]">Cargando…</p>;
   }
 
   if (!result.found) {
     return (
-      <div>
-        <p className="text-[var(--mut)] mb-3">
-          Pendiente de autoevaluación. Compartí el enlace con el arquitecto para que complete
-          su autoevaluación de Moving Motivators.
-        </p>
-        <button
-          type="button"
-          className="print:hidden border border-[var(--line)] rounded-lg px-3 min-h-11 bg-white"
-          onClick={handleCopyLink}
-        >
-          Copiar enlace
-        </button>
-      </div>
+      <p className="text-[var(--mut)]">
+        Pendiente de autoevaluación. Compartí el enlace con el arquitecto para que complete su
+        autoevaluación de Moving Motivators.
+      </p>
     );
   }
 
