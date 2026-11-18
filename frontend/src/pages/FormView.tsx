@@ -9,8 +9,11 @@ import { DebriefSection } from '../components/form/DebriefSection';
 import { FlowQA } from '../components/form/FlowQA';
 import { GapsTable } from '../components/form/GapsTable';
 import { ConditionsChecklist } from '../components/form/ConditionsChecklist';
+import { RadarChart } from '../components/charts/RadarChart';
 import { Toast } from '../components/Toast';
 import { exportOneRecord } from '../lib/exportImport';
+import { computeIndividualGapRadar } from '../lib/individualRadar';
+import { BEH_SHORT_LABELS } from '../constants/gemba.constants';
 import type { BehaviorObservation, ConditionEntry, FlowStep, Gap } from '../types/api';
 
 interface FormViewProps {
@@ -279,6 +282,17 @@ export function FormView({ recordId, onBack }: FormViewProps) {
 
       {activeTab === 'diag' && diagReady && (
         <>
+          <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)] min-h-[310px]">
+            <h2 className="text-[19px] m-0 mb-2">Radar de brechas individual</h2>
+            <p className="text-[var(--mut)]">Tu perfil de observación en este ciclo.</p>
+            <RadarChart
+              labels={BEH_SHORT_LABELS}
+              values={computeIndividualGapRadar(currentBehaviors)}
+              color="#d71920"
+              ariaLabel="Radar de brechas individual"
+            />
+          </div>
+
           <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
             <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[var(--sky)] text-[var(--blue)] mb-2">
               Debrief
