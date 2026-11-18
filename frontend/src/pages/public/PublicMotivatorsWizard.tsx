@@ -102,6 +102,7 @@ export function PublicMotivatorsWizard() {
 
         {step === 2 && (
           <StepImpacto
+            order={order}
             impacts={impacts}
             onChange={setImpacts}
             onBack={() => setStep(1)}

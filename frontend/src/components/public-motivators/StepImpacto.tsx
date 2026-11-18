@@ -1,6 +1,10 @@
 import { MOT } from '../../constants/gemba.constants';
 
+const MOT_BY_NAME = new Map(MOT.map((m) => [m.name, m]));
+
 interface StepImpactoProps {
+  /** Motivator names in the same left-to-right order chosen in Step 1 (left = most important). */
+  order: string[];
   /** motivator name -> impact (-4..4), defaults to 0 (Centro) when absent. */
   impacts: Record<string, number>;
   onChange: (impacts: Record<string, number>) => void;
@@ -11,6 +15,7 @@ interface StepImpactoProps {
 }
 
 export function StepImpacto({
+  order,
   impacts,
   onChange,
   onBack,
@@ -33,17 +38,22 @@ export function StepImpacto({
         es neutro. Podés ajustar la intensidad entre −4 y +4.
       </p>
 
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        {MOT.map((def) => {
+      <div className="grid grid-cols-2 tablet:grid-cols-5 desktop:grid-cols-10 gap-[6px]">
+        {order.map((name) => {
+          const def = MOT_BY_NAME.get(name);
+          if (!def) return null;
           const value = impacts[def.name] ?? 0;
           return (
             <div
               key={def.name}
-              className="flex-none w-[130px] flex flex-col items-center border border-[var(--line)] rounded-xl p-[10px] bg-white"
+              title={def.description}
+              className="flex flex-col items-center border border-[var(--line)] rounded-xl p-[6px] bg-white min-w-0"
             >
-              <b className="text-[12px] text-center mb-1">{def.name}</b>
+              <b className="text-[11px] desktop:text-[10px] text-center leading-tight mb-1 break-words">
+                {def.name}
+              </b>
               <span className="text-[10px] text-[var(--green)] font-bold">Arriba</span>
-              <div className="h-[140px] flex items-center justify-center my-1">
+              <div className="h-[110px] desktop:h-[90px] flex items-center justify-center my-1">
                 <input
                   type="range"
                   min={-4}
@@ -52,11 +62,11 @@ export function StepImpacto({
                   value={value}
                   onChange={(e) => setImpact(def.name, Number(e.target.value))}
                   aria-label={`Impacto de ${def.name}`}
-                  style={{ transform: 'rotate(-90deg)', width: '120px' }}
+                  style={{ transform: 'rotate(-90deg)', width: '90px' }}
                 />
               </div>
               <span className="text-[10px] text-[var(--red)] font-bold">Abajo</span>
-              <b className="mt-2 text-[14px] text-[var(--navy)]">
+              <b className="mt-2 text-[13px] text-[var(--navy)]">
                 {value > 0 ? `+${value}` : value}
               </b>
             </div>

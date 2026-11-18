@@ -53,6 +53,33 @@ test.describe('Phase I — /motivadores responsive check (no submission, free of
   }
 });
 
+test.describe('Step 2 (Impacto) respects the order chosen in Step 1', () => {
+  test('reordering in Step 1 changes the card order shown in Step 2', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/motivadores');
+    await page.getByLabel('Nombre').fill('Order Check');
+    await page.getByLabel('Correo electrónico').fill('orderCheck@example.com');
+    await page.getByLabel('Macrodominio').selectOption(MACRODOMAIN);
+    await page.getByRole('button', { name: 'Siguiente' }).click();
+
+    // MOT's fixed order starts with Aceptación, then Curiosidad. Move
+    // Curiosidad one slot left so it becomes the new leftmost (most
+    // important) card — a visual order that no longer matches MOT's raw
+    // order, which is exactly what a regression back to iterating MOT
+    // directly in Step 2 would fail to reflect.
+    await page.getByRole('button', { name: 'Mover Curiosidad a la izquierda' }).click();
+
+    await page.getByRole('button', { name: 'Siguiente' }).click();
+    await expect(page.getByText('¿Cómo impacta el nuevo rol?')).toBeVisible();
+
+    const firstCardName = await page
+      .locator('[aria-label^="Impacto de "]')
+      .first()
+      .getAttribute('aria-label');
+    expect(firstCardName).toBe('Impacto de Curiosidad');
+  });
+});
+
 test.describe('Phase I — Home and Preparar motivator sections (no submission)', () => {
   test('Home empty-state and Preparar pending-state, at 1280px and 620px', async ({
     page,

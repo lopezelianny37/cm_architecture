@@ -1,14 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { StepImpacto } from './StepImpacto';
-import { MOT } from '../../constants/gemba.constants';
+import { MOT, MOT_NAMES } from '../../constants/gemba.constants';
 
-function renderStep(impacts: Record<string, number> = {}) {
+function renderStep(impacts: Record<string, number> = {}, order: string[] = MOT_NAMES) {
   const onChange = vi.fn();
   const onSubmit = vi.fn();
   const onBack = vi.fn();
   render(
     <StepImpacto
+      order={order}
       impacts={impacts}
       onChange={onChange}
       onBack={onBack}
@@ -26,6 +27,16 @@ describe('StepImpacto', () => {
     for (const m of MOT) {
       expect(screen.getByLabelText(`Impacto de ${m.name}`)).toBeInTheDocument();
     }
+  });
+
+  it('renders the cards in the order passed in from Step 1, not the raw MOT order', () => {
+    const customOrder = [...MOT_NAMES].reverse();
+    renderStep({}, customOrder);
+
+    const renderedNames = screen
+      .getAllByText(new RegExp(`^(${MOT_NAMES.join('|')})$`))
+      .map((el) => el.textContent);
+    expect(renderedNames).toEqual(customOrder);
   });
 
   it('moving a slider to its max gives impact = 4 ("Arriba" max)', () => {
@@ -57,6 +68,7 @@ describe('StepImpacto', () => {
   it('disables Atrás/Enviar and shows "Enviando…" while submitting', () => {
     render(
       <StepImpacto
+        order={MOT_NAMES}
         impacts={{}}
         onChange={vi.fn()}
         onBack={vi.fn()}
@@ -72,6 +84,7 @@ describe('StepImpacto', () => {
   it('shows the error message when present', () => {
     render(
       <StepImpacto
+        order={MOT_NAMES}
         impacts={{}}
         onChange={vi.fn()}
         onBack={vi.fn()}
