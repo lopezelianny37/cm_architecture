@@ -55,7 +55,7 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
         <span>Menos importante →</span>
       </div>
 
-      <div className="grid grid-cols-2 tablet:grid-cols-5 desktop:grid-cols-10 gap-[6px]">
+      <div className="grid grid-cols-2 tablet:grid-cols-5 desktop:grid-cols-10 gap-[6px] desktop:gap-[14px]">
         {order.map((name) => {
           const def = MOT_BY_NAME.get(name);
           if (!def) return null;
@@ -70,26 +70,26 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
               title={def.description}
               className="rounded-xl overflow-hidden border border-[var(--line)] bg-white cursor-grab flex flex-col min-w-0"
             >
-              <div style={{ backgroundColor: color }} className="px-[4px] py-[4px] text-center">
-                <b className="block text-white text-[8px] desktop:text-[7px] uppercase tracking-wide leading-tight break-words">
+              <div style={{ backgroundColor: color }} className="px-[4px] py-[4px] desktop:py-[8px] text-center">
+                <b className="block text-white text-[8px] desktop:text-[11px] uppercase tracking-wide leading-tight break-words">
                   {def.name}
                 </b>
               </div>
               <div
                 style={{ color }}
-                className="flex items-center justify-center p-[6px] desktop:p-[4px]"
+                className="flex items-center justify-center p-[6px] desktop:p-[10px]"
               >
-                <div className="w-9 h-9 desktop:w-6 desktop:h-6">
+                <div className="w-9 h-9 desktop:w-12 desktop:h-12">
                   <MotivatorIcon name={name} />
                 </div>
               </div>
-              <div className="bg-[var(--sky)] text-[8px] desktop:text-[7px] leading-tight text-[#44516a] p-[5px] flex-1">
+              <div className="bg-[var(--sky)] text-[8px] desktop:text-[11px] leading-tight text-[#44516a] p-[5px] desktop:p-[9px] flex-1">
                 {def.description}
               </div>
-              <div className="flex gap-[4px] justify-center p-[4px]">
+              <div className="flex gap-[4px] desktop:gap-[8px] justify-center p-[4px] desktop:p-[8px]">
                 <button
                   type="button"
-                  className="print:hidden w-11 h-11 desktop:w-6 desktop:h-6 border border-[var(--line)] rounded-lg bg-white text-[14px] desktop:text-[10px] shrink-0"
+                  className="print:hidden w-11 h-11 desktop:w-8 desktop:h-8 border border-[var(--line)] rounded-lg bg-white text-[14px] desktop:text-[13px] shrink-0"
                   onClick={() => onChange(swap(order, name, 'left'))}
                   aria-label={`Mover ${name} a la izquierda`}
                 >
@@ -97,7 +97,7 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
                 </button>
                 <button
                   type="button"
-                  className="print:hidden w-11 h-11 desktop:w-6 desktop:h-6 border border-[var(--line)] rounded-lg bg-white text-[14px] desktop:text-[10px] shrink-0"
+                  className="print:hidden w-11 h-11 desktop:w-8 desktop:h-8 border border-[var(--line)] rounded-lg bg-white text-[14px] desktop:text-[13px] shrink-0"
                   onClick={() => onChange(swap(order, name, 'right'))}
                   aria-label={`Mover ${name} a la derecha`}
                 >

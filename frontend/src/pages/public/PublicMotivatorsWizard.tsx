@@ -71,9 +71,16 @@ export function PublicMotivatorsWizard() {
     );
   }
 
+  // Step 0 is a simple 3-field form, so it stays narrow like the
+  // confirmation screen; Steps 1-2 hold the 10 motivator cards and get a
+  // much wider container to use the available screen space on wide
+  // monitors (Home.tsx/FormView.tsx are untouched — this width only
+  // applies to the public wizard).
+  const containerMaxWidth = step === 0 ? 'max-w-[640px]' : 'max-w-[1400px]';
+
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      <div className="max-w-[900px] mx-auto p-5">
+      <div className={`${containerMaxWidth} mx-auto p-5`}>
         <div className="mb-4">
           <div className="font-extrabold text-[var(--navy)] text-[16px]">
             Experimento Gemba · Arquitectura IB
