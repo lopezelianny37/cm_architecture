@@ -13,13 +13,65 @@ function renderStep(order = MOT_NAMES) {
   return { ...utils, onChange, onNext, onBack };
 }
 
+function descriptionFor(name: string): string {
+  return MOT.find((m) => m.name === name)!.description;
+}
+
 describe('StepOrdenar', () => {
-  it('renders all 10 motivator cards, with the description both visible and as a title tooltip', () => {
+  it('renders all 10 motivator cards with no description visible by default', () => {
     renderStep();
     for (const m of MOT) {
-      const card = screen.getByText(m.name).closest('[draggable]');
-      expect(card).toHaveAttribute('title', m.description);
-      expect(screen.getByText(m.description)).toBeInTheDocument();
+      expect(screen.queryByText(m.description)).not.toBeInTheDocument();
+    }
+  });
+
+  it('shows the description as a tooltip above the card on hover, and hides it on mouse leave', () => {
+    renderStep();
+    const name = MOT_NAMES[0];
+    const description = descriptionFor(name);
+    const card = screen.getByText(name).closest('[draggable]')!;
+
+    fireEvent.mouseEnter(card);
+    expect(screen.getByText(description)).toBeInTheDocument();
+
+    fireEvent.mouseLeave(card);
+    expect(screen.queryByText(description)).not.toBeInTheDocument();
+  });
+
+  it('shows the tooltip on focus and hides it on blur (keyboard/touch fallback where hover is unavailable)', () => {
+    renderStep();
+    const name = MOT_NAMES[0];
+    const description = descriptionFor(name);
+    const card = screen.getByText(name).closest('[draggable]')!;
+
+    fireEvent.focus(card);
+    expect(screen.getByText(description)).toBeInTheDocument();
+
+    fireEvent.blur(card);
+    expect(screen.queryByText(description)).not.toBeInTheDocument();
+  });
+
+  it('is focusable (tabIndex) so the hover fallback works without a mouse', () => {
+    renderStep();
+    const card = screen.getByText(MOT_NAMES[0]).closest('[draggable]')!;
+    expect(card).toHaveAttribute('tabIndex', '0');
+  });
+
+  it('exposes the description via aria-label for assistive tech', () => {
+    renderStep();
+    for (const m of MOT) {
+      const card = screen.getByText(m.name).closest('[draggable]')!;
+      expect(card).toHaveAttribute('aria-label', `${m.name}: ${m.description}`);
+    }
+  });
+
+  it('keeps every header on a single line, shrinking the font for the longest names', () => {
+    renderStep();
+    const longNames = new Set(['Aceptación', 'Curiosidad', 'Relaciones']);
+    for (const m of MOT) {
+      const header = screen.getByText(m.name);
+      expect(header).toHaveClass('whitespace-nowrap');
+      expect(header.className).toMatch(longNames.has(m.name) ? /text-\[7px\]/ : /text-\[8px\]/);
     }
   });
 
