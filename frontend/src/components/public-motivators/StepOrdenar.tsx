@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MOT } from '../../constants/gemba.constants';
+import { MOT, MOT_COLORS } from '../../constants/gemba.constants';
+import { MotivatorIcon } from './MotivatorIcon';
 
 interface StepOrdenarProps {
   /** Motivator names in left-to-right visual order (left = most important). */
@@ -58,6 +59,7 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
         {order.map((name) => {
           const def = MOT_BY_NAME.get(name);
           if (!def) return null;
+          const color = MOT_COLORS[name] ?? 'var(--navy)';
           return (
             <div
               key={name}
@@ -66,12 +68,25 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleDrop(name)}
               title={def.description}
-              className="border border-[var(--line)] rounded-xl p-[6px] bg-white cursor-grab flex flex-col items-center text-center min-w-0"
+              className="rounded-xl overflow-hidden border border-[var(--line)] bg-white cursor-grab flex flex-col min-w-0"
             >
-              <b className="block text-[11px] desktop:text-[10px] leading-tight mb-1 break-words">
-                {def.name}
-              </b>
-              <div className="flex gap-[4px]">
+              <div style={{ backgroundColor: color }} className="px-[4px] py-[4px] text-center">
+                <b className="block text-white text-[8px] desktop:text-[7px] uppercase tracking-wide leading-tight break-words">
+                  {def.name}
+                </b>
+              </div>
+              <div
+                style={{ color }}
+                className="flex items-center justify-center p-[6px] desktop:p-[4px]"
+              >
+                <div className="w-9 h-9 desktop:w-6 desktop:h-6">
+                  <MotivatorIcon name={name} />
+                </div>
+              </div>
+              <div className="bg-[var(--sky)] text-[8px] desktop:text-[7px] leading-tight text-[#44516a] p-[5px] flex-1">
+                {def.description}
+              </div>
+              <div className="flex gap-[4px] justify-center p-[4px]">
                 <button
                   type="button"
                   className="print:hidden w-11 h-11 desktop:w-6 desktop:h-6 border border-[var(--line)] rounded-lg bg-white text-[14px] desktop:text-[10px] shrink-0"

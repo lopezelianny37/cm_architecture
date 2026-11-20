@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { StepOrdenar } from './StepOrdenar';
-import { MOT, MOT_NAMES } from '../../constants/gemba.constants';
+import { MOT, MOT_COLORS, MOT_NAMES } from '../../constants/gemba.constants';
 
 function renderStep(order = MOT_NAMES) {
   const onChange = vi.fn();
@@ -14,11 +14,20 @@ function renderStep(order = MOT_NAMES) {
 }
 
 describe('StepOrdenar', () => {
-  it('renders all 10 motivator cards, with the description available as a title tooltip', () => {
+  it('renders all 10 motivator cards, with the description both visible and as a title tooltip', () => {
     renderStep();
     for (const m of MOT) {
       const card = screen.getByText(m.name).closest('[draggable]');
       expect(card).toHaveAttribute('title', m.description);
+      expect(screen.getByText(m.description)).toBeInTheDocument();
+    }
+  });
+
+  it("renders each card's header in its assigned MOT_COLORS color", () => {
+    renderStep();
+    for (const m of MOT) {
+      const header = screen.getByText(m.name);
+      expect(header.parentElement).toHaveStyle({ backgroundColor: MOT_COLORS[m.name] });
     }
   });
 

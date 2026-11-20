@@ -68,6 +68,26 @@ export const MOT: MotivatorDef[] = [
 
 export const MOT_NAMES: string[] = MOT.map((m) => m.name);
 
+/**
+ * One fixed accent color per motivator, used for each card's header in the
+ * public Moving Motivators wizard. Approximated from the official
+ * Management 3.0 Moving Motivators cards' color-coding (not sampled
+ * pixel-for-pixel) — see SPEC_MOVING_MOTIVATORS_ADDENDUM.md. "Honor" here
+ * is this app's existing name for what M3.0 calls "Honra".
+ */
+export const MOT_COLORS: Record<string, string> = {
+  Curiosidad: '#E08E3F',
+  Honor: '#4A8FC2',
+  Aceptación: '#E6CC3D',
+  Maestría: '#5B9DA0',
+  Poder: '#A6A23A',
+  Libertad: '#B8432E',
+  Relaciones: '#2F7A4D',
+  Orden: '#EAB8CC',
+  Meta: '#4F3487',
+  Estatus: '#C97C92',
+};
+
 export const TYPES: string[] = ['Conocimiento', 'Competencia'];
 
 /** Primeras 3 palabras de cada behavior, para etiquetas cortas en el radar (igual al prototipo). */
