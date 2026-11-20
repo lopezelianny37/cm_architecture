@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { MOT, MOT_COLORS } from '../../constants/gemba.constants';
 import { MotivatorIcon } from './MotivatorIcon';
+import { DescriptionTooltip } from './DescriptionTooltip';
+import { isLongMotivatorName } from '../../lib/motivatorHeaderName';
+import { useHoverFocusActive } from '../../lib/useHoverFocusActive';
 
 interface StepOrdenarProps {
   /** Motivator names in left-to-right visual order (left = most important). */
@@ -12,15 +15,8 @@ interface StepOrdenarProps {
 
 const MOT_BY_NAME = new Map(MOT.map((m) => [m.name, m]));
 
-// Long names ("ACEPTACIÓN", "CURIOSIDAD", "RELACIONES") wrap onto a 2nd
-// line at the narrow end of the desktop grid (10 columns, ~75px each) if
-// sized the same as short ones — shrink just those so every header stays
-// on a single line, per explicit instruction to prioritize that over a
-// uniform font size.
-const LONG_NAME_THRESHOLD = 9;
-
 function headerSizeClass(name: string): string {
-  return name.length >= LONG_NAME_THRESHOLD
+  return isLongMotivatorName(name)
     ? 'text-[7px] desktop:text-[9px] min-[1280px]:text-[12px]'
     : 'text-[8px] desktop:text-[11px] min-[1280px]:text-[14px]';
 }
@@ -37,7 +33,7 @@ function swap(order: string[], name: string, direction: 'left' | 'right'): strin
 
 export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProps) {
   const [draggedName, setDraggedName] = useState<string | null>(null);
-  const [activeName, setActiveName] = useState<string | null>(null);
+  const { active, bind } = useHoverFocusActive();
 
   function handleDrop(targetName: string) {
     if (!draggedName || draggedName === targetName) return;
@@ -74,24 +70,20 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
           const def = MOT_BY_NAME.get(name);
           if (!def) return null;
           const color = MOT_COLORS[name] ?? 'var(--navy)';
-          const isActive = activeName === name;
+          const isActive = active === name;
 
           return (
-            <div
-              key={name}
-              draggable
-              tabIndex={0}
-              onDragStart={() => setDraggedName(name)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => handleDrop(name)}
-              onMouseEnter={() => setActiveName(name)}
-              onMouseLeave={() => setActiveName((a) => (a === name ? null : a))}
-              onFocus={() => setActiveName(name)}
-              onBlur={() => setActiveName((a) => (a === name ? null : a))}
-              aria-label={`${def.name}: ${def.description}`}
-              className="relative cursor-grab min-w-0"
-            >
-              <div className="rounded-xl overflow-hidden border border-[var(--line)] bg-white flex flex-col">
+            <div key={name} className="relative cursor-grab min-w-0">
+              <div
+                draggable
+                tabIndex={0}
+                onDragStart={() => setDraggedName(name)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => handleDrop(name)}
+                aria-label={`${def.name}: ${def.description}`}
+                {...bind(name)}
+                className="rounded-xl overflow-hidden border border-[var(--line)] bg-white flex flex-col"
+              >
                 <div style={{ backgroundColor: color }} className="px-[4px] py-[4px] desktop:py-[8px] min-[1280px]:py-[10px] text-center">
                   <b
                     className={`block text-white ${headerSizeClass(def.name)} uppercase tracking-wide leading-tight whitespace-nowrap overflow-hidden text-ellipsis`}
@@ -127,11 +119,7 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
                 </div>
               </div>
 
-              {isActive && (
-                <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 w-[130px] bg-[var(--navy)] text-white text-[10px] leading-tight rounded-lg p-[8px] z-20 pointer-events-none">
-                  {def.description}
-                </div>
-              )}
+              {isActive && <DescriptionTooltip description={def.description} position="above" />}
             </div>
           );
         })}

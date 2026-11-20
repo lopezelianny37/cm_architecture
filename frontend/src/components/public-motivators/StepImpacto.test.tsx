@@ -155,6 +155,20 @@ describe('StepImpacto', () => {
     expect(screen.queryByText(/aprueban lo que hago/)).not.toBeInTheDocument();
   });
 
+  it('shows the motivator description in a tooltip on hover, without needing to drag or select it', () => {
+    renderStep();
+    const name = MOT_NAMES[0];
+    const slider = screen.getByLabelText(`Impacto de ${name}`);
+
+    expect(screen.queryByText(/aprueban lo que hago/)).not.toBeInTheDocument();
+
+    fireEvent.mouseEnter(slider);
+    expect(screen.getByText(/aprueban lo que hago/)).toBeInTheDocument();
+
+    fireEvent.mouseLeave(slider);
+    expect(screen.queryByText(/aprueban lo que hago/)).not.toBeInTheDocument();
+  });
+
   it('shows the title/instruction text', () => {
     renderStep();
     expect(

@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { MOT, MOT_COLORS } from '../../constants/gemba.constants';
 import { MotivatorIcon } from './MotivatorIcon';
+import { DescriptionTooltip } from './DescriptionTooltip';
+import { isLongMotivatorName } from '../../lib/motivatorHeaderName';
+import { useHoverFocusActive } from '../../lib/useHoverFocusActive';
 import {
   IMPACT_MAX,
   IMPACT_MIN,
@@ -11,6 +14,12 @@ import {
 const MOT_BY_NAME = new Map(MOT.map((m) => [m.name, m]));
 const TRACK_LEVELS = [4, 3, 2, 1, 0, -1, -2, -3, -4];
 const TRACK_HEIGHT = 320;
+
+function headerSizeClass(name: string): string {
+  return isLongMotivatorName(name)
+    ? 'text-[6px] desktop:text-[9px] min-[1280px]:text-[12px]'
+    : 'text-[6px] desktop:text-[11px] min-[1280px]:text-[14px]';
+}
 
 interface StepImpactoProps {
   /** Motivator names in the same left-to-right order chosen in Step 1 (left = most important). */
@@ -35,7 +44,7 @@ export function StepImpacto({
 }: StepImpactoProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [draggingName, setDraggingName] = useState<string | null>(null);
-  const [focusedName, setFocusedName] = useState<string | null>(null);
+  const { active, bind } = useHoverFocusActive();
 
   function setImpact(name: string, value: number) {
     onChange({ ...impacts, [name]: value });
@@ -75,7 +84,7 @@ export function StepImpacto({
     }
   }
 
-  const activeName = draggingName ?? focusedName;
+  const activeName = draggingName ?? active;
 
   return (
     <div className="card bg-white border border-[var(--line)] rounded-2xl p-[18px] shadow-[var(--shadow)]">
@@ -135,32 +144,37 @@ export function StepImpacto({
                       e.preventDefault();
                       setDraggingName(name);
                     }}
-                    onFocus={() => setFocusedName(name)}
-                    onBlur={() => setFocusedName((f) => (f === name ? null : f))}
+                    {...bind(name)}
                     onKeyDown={(e) => handleKeyDown(name, e)}
-                    className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-11 desktop:w-[60px] desktop:h-[74px] cursor-grab flex flex-col"
+                    className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-11 desktop:w-[72px] desktop:h-[88px] min-[1280px]:w-[96px] min-[1280px]:h-[118px] cursor-grab flex flex-col"
                     style={{ top: `${impactToTrackFraction(value) * 100}%`, touchAction: 'none' }}
                   >
                     <div className="h-full rounded-lg overflow-hidden border border-[var(--line)] bg-white shadow-sm flex flex-col">
-                      <div style={{ backgroundColor: color }} className="px-[2px] py-[1px] desktop:py-[3px] text-center">
-                        <b className="block text-white text-[6px] desktop:text-[10px] uppercase leading-none break-words">
+                      <div
+                        style={{ backgroundColor: color }}
+                        className="px-[2px] py-[1px] desktop:py-[4px] min-[1280px]:py-[6px] text-center"
+                      >
+                        <b
+                          className={`block text-white ${headerSizeClass(name)} uppercase leading-none whitespace-nowrap overflow-hidden text-ellipsis`}
+                        >
                           {def.name}
                         </b>
                       </div>
-                      <div style={{ color }} className="flex-1 flex items-center justify-center p-[1px] desktop:p-[3px]">
-                        <div className="w-4 h-4 desktop:w-7 desktop:h-7">
+                      <div
+                        style={{ color }}
+                        className="flex-1 flex items-center justify-center p-[1px] desktop:p-[9px] min-[1280px]:p-[12px]"
+                      >
+                        <div className="w-4 h-4 desktop:w-12 desktop:h-12 min-[1280px]:w-16 min-[1280px]:h-16">
                           <MotivatorIcon name={name} />
                         </div>
                       </div>
-                      <div className="text-center text-[8px] desktop:text-[14px] font-extrabold text-[var(--navy)] leading-none pb-[1px] desktop:pb-[3px]">
+                      <div className="text-center text-[8px] desktop:text-[13px] min-[1280px]:text-[16px] font-extrabold text-[var(--navy)] leading-none pb-[1px] desktop:pb-[4px]">
                         {value > 0 ? `+${value}` : value}
                       </div>
                     </div>
 
                     {isActive && (
-                      <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 w-[110px] desktop:w-[150px] bg-[var(--navy)] text-white text-[9px] desktop:text-[11px] leading-tight rounded-lg p-[6px] desktop:p-[9px] z-10 pointer-events-none">
-                        {def.description}
-                      </div>
+                      <DescriptionTooltip description={def.description} position="below" />
                     )}
                   </div>
                 </div>
