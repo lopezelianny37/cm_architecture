@@ -39,14 +39,14 @@ describe('StepImpacto', () => {
     expect(renderedNames).toEqual(customOrder);
   });
 
-  it('moving a slider to its max gives impact = 4 ("Arriba" max)', () => {
+  it('moving a slider to its max gives impact = 4 ("Muy fomentado" max)', () => {
     const { onChange } = renderStep();
     const slider = screen.getByLabelText(`Impacto de ${MOT[0].name}`);
     fireEvent.change(slider, { target: { value: '4' } });
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ [MOT[0].name]: 4 }));
   });
 
-  it('moving a slider to its min gives impact = -4 ("Abajo" max)', () => {
+  it('moving a slider to its min gives impact = -4 ("Muy negativo" max)', () => {
     const { onChange } = renderStep();
     const slider = screen.getByLabelText(`Impacto de ${MOT[0].name}`);
     fireEvent.change(slider, { target: { value: '-4' } });
@@ -79,6 +79,20 @@ describe('StepImpacto', () => {
     );
     expect(screen.getByText('Enviando…')).toBeDisabled();
     expect(screen.getByText('Atrás')).toBeDisabled();
+  });
+
+  it('shows the new title/instruction text and the "Muy fomentado"/"Muy negativo" labels', () => {
+    renderStep();
+    expect(
+      screen.getByText('¿En qué medida son fomentados estos valores actualmente en tu entorno laboral?'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Ordene las tarjetas hacia arriba (muy fomentado) y hacia abajo (muy negativo); en el medio es indiferente o neutral.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText('Muy fomentado').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Muy negativo').length).toBeGreaterThan(0);
   });
 
   it('shows the error message when present', () => {

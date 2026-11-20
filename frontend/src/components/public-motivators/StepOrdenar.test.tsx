@@ -78,4 +78,11 @@ describe('StepOrdenar', () => {
     expect(screen.getByText('← Más importante')).toBeInTheDocument();
     expect(screen.getByText('Menos importante →')).toBeInTheDocument();
   });
+
+  it('shows the updated instructional text', () => {
+    renderStep();
+    expect(
+      screen.getByText('Arrastre las tarjetas de (← mayor) a (menor →) importancia, según su descripción.'),
+    ).toBeInTheDocument();
+  });
 });

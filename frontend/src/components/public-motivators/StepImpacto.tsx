@@ -32,10 +32,12 @@ export function StepImpacto({
       <span className="inline-block rounded-full px-[9px] py-[3px] text-[11px] font-extrabold bg-[var(--sky)] text-[var(--blue)] mb-2">
         Paso 2 · Impacto
       </span>
-      <h2 className="text-[19px] m-0 mb-2">¿Cómo impacta el nuevo rol?</h2>
+      <h2 className="text-[19px] m-0 mb-2">
+        ¿En qué medida son fomentados estos valores actualmente en tu entorno laboral?
+      </h2>
       <p className="text-[var(--mut)] mb-3">
-        Para cada motivador: arriba si el cambio lo favorece, abajo si lo debilita, al centro si
-        es neutro. Podés ajustar la intensidad entre −4 y +4.
+        Ordene las tarjetas hacia arriba (muy fomentado) y hacia abajo (muy negativo); en el
+        medio es indiferente o neutral.
       </p>
 
       <div className="grid grid-cols-2 tablet:grid-cols-5 desktop:grid-cols-10 gap-[6px]">
@@ -52,7 +54,7 @@ export function StepImpacto({
               <b className="text-[11px] desktop:text-[10px] text-center leading-tight mb-1 break-words">
                 {def.name}
               </b>
-              <span className="text-[10px] text-[var(--green)] font-bold">Arriba</span>
+              <span className="text-[10px] text-[var(--green)] font-bold">Muy fomentado</span>
               <div className="h-[110px] desktop:h-[90px] flex items-center justify-center my-1">
                 <input
                   type="range"
@@ -65,7 +67,7 @@ export function StepImpacto({
                   style={{ transform: 'rotate(-90deg)', width: '90px' }}
                 />
               </div>
-              <span className="text-[10px] text-[var(--red)] font-bold">Abajo</span>
+              <span className="text-[10px] text-[var(--red)] font-bold">Muy negativo</span>
               <b className="mt-2 text-[13px] text-[var(--navy)]">
                 {value > 0 ? `+${value}` : value}
               </b>

@@ -46,8 +46,7 @@ export function StepOrdenar({ order, onChange, onNext, onBack }: StepOrdenarProp
       </span>
       <h2 className="text-[19px] m-0 mb-2">¿Qué te mueve?</h2>
       <p className="text-[var(--mut)] mb-3">
-        Arrastrá las tarjetas: a la izquierda las más importantes, a la derecha las menos
-        importantes para vos.
+        Arrastre las tarjetas de (← mayor) a (menor →) importancia, según su descripción.
       </p>
 
       <div className="flex justify-between text-[11px] font-bold text-[var(--mut)] mb-1 px-1">
