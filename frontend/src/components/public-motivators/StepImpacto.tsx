@@ -138,21 +138,21 @@ export function StepImpacto({
                     onFocus={() => setFocusedName(name)}
                     onBlur={() => setFocusedName((f) => (f === name ? null : f))}
                     onKeyDown={(e) => handleKeyDown(name, e)}
-                    className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-11 cursor-grab flex flex-col"
+                    className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-11 desktop:w-[43px] desktop:h-[53px] cursor-grab flex flex-col"
                     style={{ top: `${impactToTrackFraction(value) * 100}%`, touchAction: 'none' }}
                   >
                     <div className="h-full rounded-lg overflow-hidden border border-[var(--line)] bg-white shadow-sm flex flex-col">
                       <div style={{ backgroundColor: color }} className="px-[2px] py-[1px] text-center">
-                        <b className="block text-white text-[6px] uppercase leading-none break-words">
+                        <b className="block text-white text-[6px] desktop:text-[7px] uppercase leading-none break-words">
                           {def.name}
                         </b>
                       </div>
                       <div style={{ color }} className="flex-1 flex items-center justify-center p-[1px]">
-                        <div className="w-4 h-4">
+                        <div className="w-4 h-4 desktop:w-5 desktop:h-5">
                           <MotivatorIcon name={name} />
                         </div>
                       </div>
-                      <div className="text-center text-[8px] font-extrabold text-[var(--navy)] leading-none pb-[1px]">
+                      <div className="text-center text-[8px] desktop:text-[10px] font-extrabold text-[var(--navy)] leading-none pb-[1px]">
                         {value > 0 ? `+${value}` : value}
                       </div>
                     </div>
