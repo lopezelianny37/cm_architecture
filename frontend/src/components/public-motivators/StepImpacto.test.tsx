@@ -172,7 +172,9 @@ describe('StepImpacto', () => {
   it('shows the title/instruction text', () => {
     renderStep();
     expect(
-      screen.getByText('¿En qué medida son fomentados estos valores actualmente en tu entorno laboral?'),
+      screen.getByText(
+        '¿En qué medida los cambios fomentan o impactan estos valores, actualmente en tu entorno laboral?',
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByText(

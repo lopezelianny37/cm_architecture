@@ -92,7 +92,7 @@ export function StepImpacto({
         Paso 2 · Impacto
       </span>
       <h2 className="text-[19px] m-0 mb-2">
-        ¿En qué medida son fomentados estos valores actualmente en tu entorno laboral?
+        ¿En qué medida los cambios fomentan o impactan estos valores, actualmente en tu entorno laboral?
       </h2>
       <p className="text-[var(--mut)] mb-3">
         Ordene las tarjetas hacia arriba (muy fomentado) y hacia abajo (muy negativo); en el
